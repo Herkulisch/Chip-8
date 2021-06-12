@@ -1,4 +1,8 @@
+use crate::chip::Chip8;
+use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
+use rand::Rng;
 use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
+
 pub enum Instruction {
     SYS(u16),
     CLS,
@@ -71,6 +75,303 @@ pub enum Instruction {
     /// Also wraps around if the sprite overflows from the right or left
     DRW(u8, u8, u8),
 }
+
+impl Instruction {
+    fn next(chip: &mut Chip8) {
+        chip.pc += 2;
+    }
+    fn skip(chip: &mut Chip8) {
+        chip.pc += 4;
+    }
+    pub fn execute(&self, chip: &mut Chip8) {
+        match self {
+            Instruction::CLS => {
+                chip.display.clear();
+                Instruction::next(chip);
+            }
+            Instruction::RET => {
+                chip.pc = chip.stack[chip.sp as usize];
+                chip.sp -= 1;
+                Instruction::next(chip);
+            }
+            Instruction::SYS(address) => Instruction::next(chip),
+
+            Instruction::JP(address) => {
+                chip.pc = *address;
+            }
+            Instruction::JP3N(nnn) => {
+                chip.pc = *nnn + chip.v[0x0] as u16;
+            }
+
+            Instruction::CALL(address) => {
+                if chip.sp < 15 {
+                    chip.sp += 1;
+                }
+                chip.stack[chip.sp as usize] = chip.pc;
+                chip.pc = *address;
+            }
+
+            Instruction::SIREB(x, byte) => {
+                if chip.v[*x as usize] == *byte {
+                    Instruction::skip(chip);
+                }
+            }
+            Instruction::SIRNEB(x, byte) => {
+                if chip.v[*x as usize] != *byte {
+                    Instruction::skip(chip);
+                }
+            }
+            Instruction::SIRER(x, y) => {
+                if chip.v[*x as usize] == chip.v[*y as usize] {
+                    Instruction::skip(chip);
+                }
+            }
+            Instruction::SIRNER(x, y) => {
+                if chip.v[*x as usize] == chip.v[*y as usize] {
+                    Instruction::skip(chip);
+                }
+            }
+            Instruction::SKP(key) => {
+                let pressed_key = chip.ui.key_pressed(match key {
+                    0x0 => KeyCode::Char('0'),
+                    0x1 => KeyCode::Char('1'),
+                    0x2 => KeyCode::Char('2'),
+                    0x3 => KeyCode::Char('3'),
+                    0x4 => KeyCode::Char('4'),
+                    0x5 => KeyCode::Char('5'),
+                    0x6 => KeyCode::Char('6'),
+                    0x7 => KeyCode::Char('7'),
+                    0x8 => KeyCode::Char('8'),
+                    0x9 => KeyCode::Char('9'),
+                    0xa => KeyCode::Char('a'),
+                    0xb => KeyCode::Char('b'),
+                    0xc => KeyCode::Char('c'),
+                    0xd => KeyCode::Char('d'),
+                    0xe => KeyCode::Char('e'),
+                    0xf => KeyCode::Char('f'),
+                    _ => KeyCode::Char('f'),
+                });
+                if pressed_key {
+                    Instruction::skip(chip);
+                }
+            }
+            Instruction::SKNP(key) => {
+                let pressed_key = chip.ui.key_pressed(match key {
+                    0x0 => KeyCode::Char('0'),
+                    0x1 => KeyCode::Char('1'),
+                    0x2 => KeyCode::Char('2'),
+                    0x3 => KeyCode::Char('3'),
+                    0x4 => KeyCode::Char('4'),
+                    0x5 => KeyCode::Char('5'),
+                    0x6 => KeyCode::Char('6'),
+                    0x7 => KeyCode::Char('7'),
+                    0x8 => KeyCode::Char('8'),
+                    0x9 => KeyCode::Char('9'),
+                    0xa => KeyCode::Char('a'),
+                    0xb => KeyCode::Char('b'),
+                    0xc => KeyCode::Char('c'),
+                    0xd => KeyCode::Char('d'),
+                    0xe => KeyCode::Char('e'),
+                    0xf => KeyCode::Char('f'),
+                    _ => KeyCode::Char('f'),
+                });
+                if !pressed_key {
+                    Instruction::skip(chip);
+                }
+            }
+
+            Instruction::LDBR(x, byte) => {
+                chip.v[*x as usize] = *byte;
+                Instruction::next(chip);
+            }
+            Instruction::LDRR(x, y) => {
+                chip.v[*x as usize] = chip.v[*y as usize];
+                Instruction::next(chip);
+            }
+            Instruction::LD3NI(nnn) => {
+                chip.i = *nnn;
+                Instruction::next(chip);
+            }
+            Instruction::LDDTR(x) => {
+                chip.v[*x as usize] = chip.dt;
+                Instruction::next(chip);
+            }
+            Instruction::LDRDT(x) => {
+                chip.dt = chip.v[*x as usize];
+                Instruction::next(chip);
+            }
+            Instruction::LDKR(x) => {
+                let key = match chip.ui.listen_for_key() {
+                    KeyCode::Char(x) => match x {
+                        '0' => 0x0u8,
+                        '1' => 0x1,
+                        '2' => 0x2,
+                        '3' => 0x3,
+                        '4' => 0x4,
+                        '5' => 0x5,
+                        '6' => 0x6,
+                        '7' => 0x7,
+                        '8' => 0x8,
+                        '9' => 0x9,
+                        'a' => 0xa,
+                        'b' => 0xb,
+                        'c' => 0xc,
+                        'd' => 0xd,
+                        'e' => 0xe,
+                        'f' => 0xf,
+                        _ => 0xf,
+                    },
+                    _ => 0xf,
+                };
+                chip.v[*x as usize] = key;
+                Instruction::next(chip);
+            }
+            Instruction::LDRST(x) => {
+                chip.st = chip.v[*x as usize];
+                Instruction::next(chip);
+            }
+            Instruction::LDSI(n) => {
+                let sprite: [u8; 5] = match *n {
+                    0x0 => [0xF0, 0x90, 0x90, 0x90, 0xF0],
+                    0x1 => [0x20, 0x60, 0x20, 0x20, 0x70],
+                    0x2 => [0xF0, 0x10, 0xF0, 0x80, 0xF0],
+                    0x3 => [0xF0, 0x10, 0xF0, 0x10, 0xF0],
+                    0x4 => [0x90, 0x90, 0xF0, 0x10, 0x10],
+                    0x5 => [0xF0, 0x80, 0xF0, 0x10, 0xF0],
+                    0x6 => [0xF0, 0x80, 0xF0, 0x90, 0xF0],
+                    0x7 => [0xF0, 0x10, 0x20, 0x40, 0x40],
+                    0x8 => [0xF0, 0x90, 0xF0, 0x90, 0xF0],
+                    0x9 => [0xF0, 0x90, 0xF0, 0x10, 0xF0],
+                    0xA => [0xF0, 0x90, 0xF0, 0x90, 0x90],
+                    0xB => [0xE0, 0x90, 0xE0, 0x90, 0xE0],
+                    0xC => [0xF0, 0x80, 0x80, 0x80, 0xF0],
+                    0xD => [0xE0, 0x90, 0x90, 0x90, 0xE0],
+                    0xE => [0xF0, 0x80, 0xF0, 0x80, 0xF0],
+                    0xF => [0xF0, 0x80, 0xF0, 0x80, 0x80],
+                    ___ => [0xFF, 0xFF, 0xFF, 0xFF, 0xFF],
+                };
+                chip.i = (*n * 5) as u16;
+                Instruction::next(chip);
+            }
+            Instruction::LDRBCDL(x) => {
+                let e = *x % 10;
+                let z = (*x % 100) - e;
+                let h = *x - z - e;
+                chip.ram[chip.i as usize] = e;
+                chip.ram[chip.i as usize + 1] = z;
+                chip.ram[chip.i as usize + 2] = h;
+                Instruction::next(chip);
+            }
+            Instruction::LDRRL(x) => {
+                for i in 0..=(*x as usize) {
+                    chip.ram[chip.i as usize + i] = chip.v[i];
+                }
+                Instruction::next(chip);
+            }
+            Instruction::LDLRR(x) => {
+                for i in 0..=(*x as usize) {
+                    chip.v[i] = chip.ram[chip.i as usize + i] as u8;
+                }
+                Instruction::next(chip);
+            }
+
+            Instruction::ADDBR(x, byte) => {
+                chip.v[*x as usize] += *byte;
+                Instruction::next(chip);
+            }
+            Instruction::ADDRR(x, y) => {
+                chip.v[*x as usize] += chip.v[*y as usize];
+                Instruction::next(chip);
+            }
+            Instruction::ADDRI(x) => {
+                chip.i += chip.v[*x as usize] as u16;
+                Instruction::next(chip);
+            }
+
+            Instruction::OR(x, y) => {
+                chip.v[*x as usize] = chip.v[*x as usize] | chip.v[*y as usize];
+                Instruction::next(chip);
+            }
+            Instruction::AND(x, y) => {
+                chip.v[*x as usize] = chip.v[*x as usize] & chip.v[*y as usize];
+                Instruction::next(chip);
+            }
+            Instruction::XOR(x, y) => {
+                chip.v[*x as usize] = chip.v[*x as usize] ^ chip.v[*y as usize];
+                Instruction::next(chip);
+            }
+
+            Instruction::SUB(x, y) => {
+                chip.v[*x as usize] -= chip.v[*y as usize];
+                Instruction::next(chip);
+            }
+            Instruction::SUBN(x, y) => {
+                if chip.v[*x as usize] < chip.v[*y as usize] {
+                    chip.v[0xf] = 1;
+                } else {
+                    chip.v[0xf] = 0;
+                }
+                chip.v[*y as usize] -= chip.v[*x as usize];
+                Instruction::next(chip);
+            }
+
+            Instruction::SHR(x) => {
+                chip.v[0xf] = match chip.v[*x as usize] << 7 >> 7 {
+                    1 => 1,
+                    _ => 0,
+                };
+                chip.v[*x as usize] /= 2;
+                Instruction::next(chip);
+            }
+            Instruction::SHL(x) => {
+                chip.v[0xf] = match chip.v[*x as usize] >> 7 {
+                    1 => 1,
+                    _ => 0,
+                };
+                chip.v[*x as usize] *= 2;
+                Instruction::next(chip);
+            }
+
+            Instruction::RND(x, byte) => {
+                let rnd: u8 = rand::thread_rng().gen();
+                chip.v[*x as usize] = byte & rnd;
+                Instruction::next(chip);
+            }
+            Instruction::DRW(x, y, n) => {
+                // I will ignore the wrapping on an overflow for now
+                let mut v_f = 0;
+                let mut sprite: Vec<Vec<u8>> = vec![vec![0; *n as usize]; 8];
+                for row in 0..sprite[0].len() {
+                    for column in 0..sprite.len() {
+                        // Used to put the sprite into a u8 matrix
+                        sprite[column][row] = ((chip.ram[(chip.i as usize + row)] << column as u8)
+                            >> column as u8)
+                            >> 7 - column as u8;
+                    }
+                }
+
+                for column in (chip.v[*x as usize])..sprite.len() as u8 {
+                    for row in (chip.v[*y as usize])..sprite[column as usize].len() as u8 {
+                        if column < sprite.len() as u8 && row < sprite[column as usize].len() as u8
+                        {
+                            let prev_value = chip.display.pixel(column, row);
+                            *chip.display.pixel_mut(column, row) ^=
+                                sprite[column as usize][row as usize];
+                            if chip.display.pixel(column, row) != prev_value {
+                                v_f = 1;
+                            }
+                        }
+                    }
+                }
+                chip.v[0xf] = v_f;
+                println!("\n{}", chip.display);
+                Instruction::next(chip);
+            }
+            Instruction::ERR(instruction) => panic!(*instruction),
+        };
+    }
+}
+
 impl From<[u8; 2]> for Instruction {
     fn from(inst: [u8; 2]) -> Instruction {
         let nnnn = ((inst[0] as u16) << 2 * 4) + inst[1] as u16;

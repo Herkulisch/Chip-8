@@ -1,5 +1,12 @@
+use std::fs;
+use std::time::Instant;
+
+use crate::chip::Rom;
 use crate::front_end::Tui;
+
 use crate::chip::screen::Screen;
+use crate::chip::Instruction;
+
 pub struct Chip8 {
     pub(super) ram: [u8; 0xfff],
     pub(super) v: [u8; 16],
@@ -42,6 +49,20 @@ impl Chip8 {
         ];
         for (i, sprite) in sprites.iter().enumerate() {
             self.ram[i] = *sprite;
+        }
+    }
+
+    pub fn start_rom(&mut self, path: String) {
+        let rom = Rom::new(path.clone()).unwrap();
+        println!("{}", rom);
+        for (i, nn) in fs::read(path).unwrap().iter().enumerate() {
+            self.ram[0x200 + i] = *nn;
+        }
+        self.pc = 0x200;
+        loop {
+            let instruction =
+                Instruction::from([self.ram[self.pc as usize], self.ram[self.pc as usize + 1]]);
+            instruction.execute(self);
         }
     }
 }

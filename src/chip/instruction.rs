@@ -1,5 +1,5 @@
 use crate::chip::Chip8;
-use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
+use crossterm::event::KeyCode;
 use rand::Rng;
 use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
 

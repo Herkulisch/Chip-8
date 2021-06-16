@@ -293,7 +293,12 @@ impl Instruction {
             }
 
             Instruction::SUB(x, y) => {
-                chip.v[*x as usize] -= chip.v[*y as usize];
+                if chip.v[*x as usize] > chip.v[*y as usize] {
+                    chip.v[0xf] = 1;
+                } else {
+                    chip.v[0xf] = 0;
+                }
+                chip.v[*x as usize] = chip.v[*x as usize].wrapping_sub(chip.v[*y as usize]);
                 Instruction::next(chip);
             }
             Instruction::SUBN(x, y) => {
@@ -302,7 +307,7 @@ impl Instruction {
                 } else {
                     chip.v[0xf] = 0;
                 }
-                chip.v[*y as usize] -= chip.v[*x as usize];
+                chip.v[*y as usize] = chip.v[*y as usize].wrapping_sub(chip.v[*x as usize]);
                 Instruction::next(chip);
             }
 

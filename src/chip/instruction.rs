@@ -374,8 +374,8 @@ impl From<[u8; 2]> for Instruction {
         let address = nnnn << 4 >> 4;
         let x = (nnnn << 4 >> 3 * 4) as u8;
         let y = (nnnn << 2 * 4 >> 3 * 4) as u8;
-        let nnn = nnnn << 4 >> 4;
         let n = (nnnn << 3 * 4 >> 3 * 4) as u8;
+        let nnn = address;
         let key = x;
 
         let byte = nnnn as u8;

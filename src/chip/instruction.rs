@@ -104,9 +104,7 @@ impl Instruction {
             }
 
             Instruction::CALL(address) => {
-                if chip.sp < 15 {
-                    chip.sp += 1;
-                }
+                chip.sp += 1;
                 chip.stack[chip.sp as usize] = chip.pc;
                 chip.pc = *address;
             }
@@ -243,25 +241,6 @@ impl Instruction {
                 Instruction::next(chip);
             }
             Instruction::LDSI(n) => {
-                let sprite: [u8; 5] = match *n {
-                    0x0 => [0xF0, 0x90, 0x90, 0x90, 0xF0],
-                    0x1 => [0x20, 0x60, 0x20, 0x20, 0x70],
-                    0x2 => [0xF0, 0x10, 0xF0, 0x80, 0xF0],
-                    0x3 => [0xF0, 0x10, 0xF0, 0x10, 0xF0],
-                    0x4 => [0x90, 0x90, 0xF0, 0x10, 0x10],
-                    0x5 => [0xF0, 0x80, 0xF0, 0x10, 0xF0],
-                    0x6 => [0xF0, 0x80, 0xF0, 0x90, 0xF0],
-                    0x7 => [0xF0, 0x10, 0x20, 0x40, 0x40],
-                    0x8 => [0xF0, 0x90, 0xF0, 0x90, 0xF0],
-                    0x9 => [0xF0, 0x90, 0xF0, 0x10, 0xF0],
-                    0xA => [0xF0, 0x90, 0xF0, 0x90, 0x90],
-                    0xB => [0xE0, 0x90, 0xE0, 0x90, 0xE0],
-                    0xC => [0xF0, 0x80, 0x80, 0x80, 0xF0],
-                    0xD => [0xE0, 0x90, 0x90, 0x90, 0xE0],
-                    0xE => [0xF0, 0x80, 0xF0, 0x80, 0xF0],
-                    0xF => [0xF0, 0x80, 0xF0, 0x80, 0x80],
-                    ___ => [0xFF, 0xFF, 0xFF, 0xFF, 0xFF],
-                };
                 chip.i = (*n * 5) as u16;
                 Instruction::next(chip);
             }
@@ -301,15 +280,15 @@ impl Instruction {
             }
 
             Instruction::OR(x, y) => {
-                chip.v[*x as usize] = chip.v[*x as usize] | chip.v[*y as usize];
+                chip.v[*x as usize] |= chip.v[*y as usize];
                 Instruction::next(chip);
             }
             Instruction::AND(x, y) => {
-                chip.v[*x as usize] = chip.v[*x as usize] & chip.v[*y as usize];
+                chip.v[*x as usize] &= chip.v[*y as usize];
                 Instruction::next(chip);
             }
             Instruction::XOR(x, y) => {
-                chip.v[*x as usize] = chip.v[*x as usize] ^ chip.v[*y as usize];
+                chip.v[*x as usize] ^= chip.v[*y as usize];
                 Instruction::next(chip);
             }
 

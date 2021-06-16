@@ -267,15 +267,15 @@ impl Instruction {
             }
 
             Instruction::ADDBR(x, byte) => {
-                chip.v[*x as usize] += *byte;
+                chip.v[*x as usize] = chip.v[*x as usize].wrapping_add(*byte);
                 Instruction::next(chip);
             }
             Instruction::ADDRR(x, y) => {
-                chip.v[*x as usize] += chip.v[*y as usize];
+                chip.v[*x as usize] = chip.v[*x as usize].wrapping_add(chip.v[*y as usize]);
                 Instruction::next(chip);
             }
             Instruction::ADDRI(x) => {
-                chip.i += chip.v[*x as usize] as u16;
+                chip.i = chip.i.wrapping_add(chip.v[*x as usize] as u16);
                 Instruction::next(chip);
             }
 

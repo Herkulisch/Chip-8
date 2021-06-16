@@ -471,7 +471,7 @@ impl Display for Instruction {
             Instruction::SHR(x) => format!("    SHR {:X}", x),
             Instruction::SHL(x) => format!("    SHL {:X}", x),
             Instruction::RND(x, byte) => format!("    RND {:X}\t\t{:X}", x, byte),
-            Instruction::DRW(x, y, n) => format!("    DRW {:X}\t\t{:X}{:X}", x, y, n),
+            Instruction::DRW(x, y, n) => format!("    DRW {}\t\t{}\t{:X}", x, y, n),
             Instruction::ERR(instruction) => format!("    ERR {:X}", instruction),
         };
         write!(f, "{}", string)
@@ -515,7 +515,7 @@ impl Debug for Instruction {
             Instruction::SHR(x) => format!("    SHR {:X}", x),
             Instruction::SHL(x) => format!("    SHL {:X}", x),
             Instruction::RND(x, byte) => format!("    RND {:X}\t\t{:X}", x, byte),
-            Instruction::DRW(x, y, n) => format!("    DRW {:X}\t\t{:X}{:X}", x, y, n),
+            Instruction::DRW(x, y, n) => format!("    DRW {}\t\t{}\t{:X}", x, y, n),
             Instruction::ERR(instruction) => format!("    ERR {:X}", instruction),
         };
         write!(f, "{}", string)

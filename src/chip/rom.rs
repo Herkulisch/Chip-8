@@ -1,5 +1,5 @@
 use crate::chip::instruction::Instruction;
-use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
+use std::fmt::{Display, Formatter, Result as FmtResult};
 use std::fs;
 use std::io::Error;
 pub struct Rom {

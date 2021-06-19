@@ -316,7 +316,7 @@ impl Instruction {
                     1 => 1,
                     _ => 0,
                 };
-                chip.v[*x as usize] /= 2;
+                chip.v[*x as usize] = chip.v[*x as usize].wrapping_div(2);
                 Instruction::next(chip);
             }
             Instruction::SHL(x) => {
@@ -324,7 +324,7 @@ impl Instruction {
                     1 => 1,
                     _ => 0,
                 };
-                chip.v[*x as usize] *= 2;
+                chip.v[*x as usize] = chip.v[*x as usize].wrapping_mul(2);
                 Instruction::next(chip);
             }
 
@@ -360,10 +360,13 @@ impl Instruction {
                     }
                 }
                 chip.v[0xf] = v_f;
-                println!("\n{}", chip.display);
+                // println!("\n{}", chip.display);
                 Instruction::next(chip);
             }
-            Instruction::ERR(instruction) => panic!(*instruction),
+            Instruction::ERR(instruction) => {
+                println!("{:X}", instruction);
+                panic!();
+            }
         };
     }
 }

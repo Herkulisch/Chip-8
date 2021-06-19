@@ -13,7 +13,7 @@ pub enum Instruction {
     /// It contains a ```u8``` which should store the MSB of the instructions where the error happened.
     ///     
     /// If its an ```0xff``` no proper instruction in general was found
-    ERR(u8),
+    ERR(u16),
 
     JP(u16),
     /// Jump to address: ```nnn + address```
@@ -399,7 +399,10 @@ impl From<[u8; 2]> for Instruction {
             0xe000..=0xefff => match nnnn << 2 * 4 >> 2 * 4 {
                 0x9e => Instruction::SKP(key),
                 0xa1 => Instruction::SKNP(key),
-                _ => Instruction::ERR(0xe),
+                _ => {
+                    println!("There is no instruction for {:X}", nnnn);
+                    Instruction::ERR(0xE)
+                }
             },
             0x6000..=0x6fff => Instruction::LDBR(x, byte),
             0xa000..=0xafff => Instruction::LD3NI(nnn),
@@ -414,7 +417,10 @@ impl From<[u8; 2]> for Instruction {
                 0x65 => Instruction::LDLRR(x),
 
                 0x1e => Instruction::ADDRI(x),
-                _ => Instruction::ERR(0xf),
+                _ => {
+                    println!("There is no instruction for {:X}", nnnn);
+                    Instruction::ERR(0xF)
+                }
             },
 
             0x7000..=0x7fff => Instruction::ADDBR(x, byte),
@@ -427,8 +433,11 @@ impl From<[u8; 2]> for Instruction {
                 0x5 => Instruction::SUB(x, y),
                 0x6 => Instruction::SHR(x),
                 0x7 => Instruction::SUBN(x, y),
-                0x8 => Instruction::SHL(x),
-                _ => Instruction::ERR(0x8),
+                0xE => Instruction::SHL(x),
+                _ => {
+                    println!("There is no instruction for {:X}", nnnn);
+                    Instruction::ERR(0x8)
+                }
             },
 
             0xc000..=0xcfff => Instruction::RND(x, byte),

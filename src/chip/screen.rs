@@ -23,15 +23,15 @@ impl Screen {
     }
 
     pub fn pixel_mut(&mut self, x: u8, y: u8) -> &mut u8 {
-        &mut self.pixels[(y * self.width + x) as usize]
+        &mut self.pixels[y as usize * self.width as usize + x as usize]
     }
 
     pub fn pixel(&self, x: u8, y: u8) -> u8 {
-        self.pixels[(y * self.width + x) as usize]
+        self.pixels[y as usize * self.width as usize + x as usize]
     }
 
     pub fn clear(&mut self) {
-        self.pixels = vec![0; (self.height * self.width) as usize];
+        self.pixels = vec![0; self.height as usize * self.width as usize];
     }
 }
 

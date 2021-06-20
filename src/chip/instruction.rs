@@ -89,7 +89,12 @@ impl Instruction {
                 chip.next();
             }
             Instruction::SYS(address) => {
+                println!(
+                    "This Instruction should not be used, by most roms: {:X}",
+                    address
+                );                
                 chip.next();
+                panic!();
             }
 
             Instruction::JP(address) => {
@@ -397,7 +402,7 @@ impl From<[u8; 2]> for Instruction {
                 0xa1 => Instruction::SKNP(key),
                 _ => {
                     println!("There is no instruction for {:X}", nnnn);
-                    Instruction::ERR(0xE)
+                    Instruction::ERR(nnnn)
                 }
             },
             0x6000..=0x6fff => Instruction::LDBR(x, byte),
@@ -415,7 +420,7 @@ impl From<[u8; 2]> for Instruction {
                 0x1e => Instruction::ADDRI(x),
                 _ => {
                     println!("There is no instruction for {:X}", nnnn);
-                    Instruction::ERR(0xF)
+                    Instruction::ERR(nnnn)
                 }
             },
 
@@ -432,7 +437,7 @@ impl From<[u8; 2]> for Instruction {
                 0xE => Instruction::SHL(x),
                 _ => {
                     println!("There is no instruction for {:X}", nnnn);
-                    Instruction::ERR(0x8)
+                    Instruction::ERR(nnnn)
                 }
             },
 

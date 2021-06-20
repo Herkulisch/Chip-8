@@ -247,11 +247,12 @@ impl Instruction {
             }
             Instruction::LDRBCDL(x) => {
                 let e = *x % 10;
-                let z = (*x % 100) - e;
-                let h = *x - z - e;
-                chip.ram[chip.i as usize] = e;
+                let z = ((*x % 100) - e) / 10;
+                let h = *x / 100;
+                println!("{} ({}|{}|{})", x, h, z, e);
+                chip.ram[chip.i as usize] = h;
                 chip.ram[chip.i as usize + 1] = z;
-                chip.ram[chip.i as usize + 2] = h;
+                chip.ram[chip.i as usize + 2] = e;
                 chip.next();
             }
             Instruction::LDRRL(x) => {

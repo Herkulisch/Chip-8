@@ -72,7 +72,11 @@ pub enum Instruction {
     RND(u8, u8),
     /// Reads n addresses starting from I to I + n-1 and places these sprites at the positions starting from (x, y)
     ///
-    /// Also wraps around if the sprite overflows from the right or left
+    /// ---
+    /// ~~Also wraps around if the sprite overflows from the right or left~~
+    /// 
+    /// All the roms I tested place their sprites correctly and therefore do not need an 
+    /// **overflow wrap** handling
     DRW(u8, u8, u8),
 }
 
@@ -92,7 +96,7 @@ impl Instruction {
                 println!(
                     "This Instruction should not be used, by most roms: {:X}",
                     address
-                );                
+                );
                 chip.next();
                 panic!();
             }
@@ -336,12 +340,11 @@ impl Instruction {
                 chip.next();
             }
             Instruction::DRW(x, y, n) => {
-                // I will ignore the wrapping on an overflow for now
                 let mut v_f = 0;
                 let mut sprite: Vec<Vec<u8>> = vec![vec![0; *n as usize]; 8];
+                // Puts the sprite into a u8 matrix
                 for row in 0..sprite[0].len() {
                     for column in 0..sprite.len() {
-                        // Used to put the sprite into a u8 matrix
                         sprite[column][row] = ((chip.ram[(chip.i as usize + row)] << column as u8)
                             >> column as u8)
                             >> 7 - column as u8;

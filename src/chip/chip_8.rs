@@ -1,11 +1,6 @@
-use std::fs;
-use std::time::Instant;
-
-use crate::chip::Rom;
-use crate::front_end::Tui;
-
 use crate::chip::screen::Screen;
 use crate::chip::Instruction;
+use crate::front_end::Tui;
 
 pub struct Chip8 {
     pub(super) ram: [u8; 0xfff],
@@ -53,8 +48,6 @@ impl Chip8 {
     }
 
     pub fn start_rom(&mut self, path: String) {
-        let rom = Rom::new(path.clone()).unwrap();
-        println!("{}", rom);
         for (i, nn) in fs::read(path).unwrap().iter().enumerate() {
             self.ram[0x200 + i] = *nn;
         }

@@ -58,4 +58,12 @@ impl Chip8 {
             instruction.execute(self);
         }
     }
+    /// Goes to the next Instruction by adding 2 to the Program Counter
+    pub(super) fn next(&mut self) {
+        self.pc += 2;
+    }
+    /// Skips the next Instruction by adding 4 to the Program Counter
+    pub(super) fn skip(&mut self) {
+        self.pc += 4;
+    }
 }

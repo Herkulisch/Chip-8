@@ -77,24 +77,20 @@ pub enum Instruction {
 }
 
 impl Instruction {
-    fn next(chip: &mut Chip8) {
-        chip.pc += 2;
-    }
-    fn skip(chip: &mut Chip8) {
-        chip.pc += 4;
-    }
     pub fn execute(&self, chip: &mut Chip8) {
         match self {
             Instruction::CLS => {
                 chip.display.clear();
-                Instruction::next(chip);
+                chip.next();
             }
             Instruction::RET => {
                 chip.pc = chip.stack[chip.sp as usize];
                 chip.sp -= 1;
-                Instruction::next(chip);
+                chip.next();
             }
-            Instruction::SYS(address) => Instruction::next(chip),
+            Instruction::SYS(address) => {
+                chip.next();
+            }
 
             Instruction::JP(address) => {
                 chip.pc = *address;
@@ -111,30 +107,30 @@ impl Instruction {
 
             Instruction::SIREB(x, byte) => {
                 if chip.v[*x as usize] == *byte {
-                    Instruction::skip(chip);
+                    chip.skip();
                 } else {
-                    Instruction::next(chip)
+                    chip.next()
                 }
             }
             Instruction::SIRNEB(x, byte) => {
                 if chip.v[*x as usize] != *byte {
-                    Instruction::skip(chip);
+                    chip.skip();
                 } else {
-                    Instruction::next(chip)
+                    chip.next()
                 }
             }
             Instruction::SIRER(x, y) => {
                 if chip.v[*x as usize] == chip.v[*y as usize] {
-                    Instruction::skip(chip);
+                    chip.skip();
                 } else {
-                    Instruction::next(chip)
+                    chip.next()
                 }
             }
             Instruction::SIRNER(x, y) => {
-                if chip.v[*x as usize] == chip.v[*y as usize] {
-                    Instruction::skip(chip);
+                if chip.v[*x as usize] != chip.v[*y as usize] {
+                    chip.skip();
                 } else {
-                    Instruction::next(chip)
+                    chip.next()
                 }
             }
             Instruction::SKP(key) => {
@@ -158,9 +154,9 @@ impl Instruction {
                     _ => KeyCode::Char('f'),
                 });
                 if pressed_key {
-                    Instruction::skip(chip);
+                    chip.skip();
                 } else {
-                    Instruction::next(chip)
+                    chip.next()
                 }
             }
             Instruction::SKNP(key) => {
@@ -184,31 +180,31 @@ impl Instruction {
                     _ => KeyCode::Char('f'),
                 });
                 if !pressed_key {
-                    Instruction::skip(chip);
+                    chip.skip();
                 } else {
-                    Instruction::next(chip)
+                    chip.next()
                 }
             }
 
             Instruction::LDBR(x, byte) => {
                 chip.v[*x as usize] = *byte;
-                Instruction::next(chip);
+                chip.next();
             }
             Instruction::LDRR(x, y) => {
                 chip.v[*x as usize] = chip.v[*y as usize];
-                Instruction::next(chip);
+                chip.next();
             }
             Instruction::LD3NI(nnn) => {
                 chip.i = *nnn;
-                Instruction::next(chip);
+                chip.next();
             }
             Instruction::LDDTR(x) => {
                 chip.v[*x as usize] = chip.dt;
-                Instruction::next(chip);
+                chip.next();
             }
             Instruction::LDRDT(x) => {
                 chip.dt = chip.v[*x as usize];
-                Instruction::next(chip);
+                chip.next();
             }
             Instruction::LDKR(x) => {
                 let key = match chip.ui.listen_for_key() {
@@ -234,15 +230,15 @@ impl Instruction {
                     _ => 0xf,
                 };
                 chip.v[*x as usize] = key;
-                Instruction::next(chip);
+                chip.next();
             }
             Instruction::LDRST(x) => {
                 chip.st = chip.v[*x as usize];
-                Instruction::next(chip);
+                chip.next();
             }
             Instruction::LDSI(n) => {
                 chip.i = (*n * 5) as u16;
-                Instruction::next(chip);
+                chip.next();
             }
             Instruction::LDRBCDL(x) => {
                 let e = *x % 10;
@@ -251,45 +247,45 @@ impl Instruction {
                 chip.ram[chip.i as usize] = e;
                 chip.ram[chip.i as usize + 1] = z;
                 chip.ram[chip.i as usize + 2] = h;
-                Instruction::next(chip);
+                chip.next();
             }
             Instruction::LDRRL(x) => {
                 for i in 0..=(*x as usize) {
                     chip.ram[chip.i as usize + i] = chip.v[i];
                 }
-                Instruction::next(chip);
+                chip.next();
             }
             Instruction::LDLRR(x) => {
                 for i in 0..=(*x as usize) {
                     chip.v[i] = chip.ram[chip.i as usize + i] as u8;
                 }
-                Instruction::next(chip);
+                chip.next();
             }
 
             Instruction::ADDBR(x, byte) => {
                 chip.v[*x as usize] = chip.v[*x as usize].wrapping_add(*byte);
-                Instruction::next(chip);
+                chip.next();
             }
             Instruction::ADDRR(x, y) => {
                 chip.v[*x as usize] = chip.v[*x as usize].wrapping_add(chip.v[*y as usize]);
-                Instruction::next(chip);
+                chip.next();
             }
             Instruction::ADDRI(x) => {
                 chip.i = chip.i.wrapping_add(chip.v[*x as usize] as u16);
-                Instruction::next(chip);
+                chip.next();
             }
 
             Instruction::OR(x, y) => {
                 chip.v[*x as usize] |= chip.v[*y as usize];
-                Instruction::next(chip);
+                chip.next();
             }
             Instruction::AND(x, y) => {
                 chip.v[*x as usize] &= chip.v[*y as usize];
-                Instruction::next(chip);
+                chip.next();
             }
             Instruction::XOR(x, y) => {
                 chip.v[*x as usize] ^= chip.v[*y as usize];
-                Instruction::next(chip);
+                chip.next();
             }
 
             Instruction::SUB(x, y) => {
@@ -299,7 +295,7 @@ impl Instruction {
                     chip.v[0xf] = 0;
                 }
                 chip.v[*x as usize] = chip.v[*x as usize].wrapping_sub(chip.v[*y as usize]);
-                Instruction::next(chip);
+                chip.next();
             }
             Instruction::SUBN(x, y) => {
                 if chip.v[*x as usize] < chip.v[*y as usize] {
@@ -308,7 +304,7 @@ impl Instruction {
                     chip.v[0xf] = 0;
                 }
                 chip.v[*y as usize] = chip.v[*y as usize].wrapping_sub(chip.v[*x as usize]);
-                Instruction::next(chip);
+                chip.next();
             }
 
             Instruction::SHR(x) => {
@@ -317,7 +313,7 @@ impl Instruction {
                     _ => 0,
                 };
                 chip.v[*x as usize] = chip.v[*x as usize].wrapping_div(2);
-                Instruction::next(chip);
+                chip.next();
             }
             Instruction::SHL(x) => {
                 chip.v[0xf] = match chip.v[*x as usize] >> 7 {
@@ -325,13 +321,13 @@ impl Instruction {
                     _ => 0,
                 };
                 chip.v[*x as usize] = chip.v[*x as usize].wrapping_mul(2);
-                Instruction::next(chip);
+                chip.next();
             }
 
             Instruction::RND(x, byte) => {
                 let rnd: u8 = rand::thread_rng().gen();
                 chip.v[*x as usize] = byte & rnd;
-                Instruction::next(chip);
+                chip.next();
             }
             Instruction::DRW(x, y, n) => {
                 // I will ignore the wrapping on an overflow for now
@@ -361,7 +357,7 @@ impl Instruction {
                 }
                 chip.v[0xf] = v_f;
                 // println!("\n{}", chip.display);
-                Instruction::next(chip);
+                chip.next();
             }
             Instruction::ERR(instruction) => {
                 println!("{:X}", instruction);

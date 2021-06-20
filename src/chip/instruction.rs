@@ -346,15 +346,15 @@ impl Instruction {
                             >> 7 - column as u8;
                     }
                 }
-
-                for column in (chip.v[*x as usize])..sprite.len() as u8 {
-                    for row in (chip.v[*y as usize])..sprite[column as usize].len() as u8 {
-                        if column < sprite.len() as u8 && row < sprite[column as usize].len() as u8
-                        {
-                            let prev_value = chip.display.pixel(column, row);
-                            *chip.display.pixel_mut(column, row) ^=
-                                sprite[column as usize][row as usize];
-                            if chip.display.pixel(column, row) != prev_value {
+                for sp_x in 0..sprite.len() as u8 {
+                    for sp_y in 0..*n {
+                        let dis_x = chip.v[*x as usize] + sp_x;
+                        let dis_y = chip.v[*y as usize] + sp_y;
+                        if dis_x < chip.display.get_width() && dis_y < chip.display.get_height() {
+                            let prev_value = chip.display.pixel(sp_x, sp_y);
+                            *chip.display.pixel_mut(dis_x, dis_y) ^=
+                                sprite[sp_x as usize][sp_y as usize];
+                            if chip.display.pixel(sp_x, sp_y) != prev_value {
                                 v_f = 1;
                             }
                         }

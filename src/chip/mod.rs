@@ -7,3 +7,4 @@ mod chip_8;
 mod instruction;
 mod rom;
 mod screen;
+mod sprite;

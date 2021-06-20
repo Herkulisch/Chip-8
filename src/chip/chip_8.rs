@@ -1,6 +1,7 @@
 use crate::chip::screen::Screen;
 use crate::chip::Instruction;
 use crate::front_end::Tui;
+use std::{fs, thread, time};
 
 pub struct Chip8 {
     pub(super) ram: [u8; 0xfff],
@@ -53,8 +54,15 @@ impl Chip8 {
         }
         self.pc = 0x200;
         loop {
-            let instruction =
-                Instruction::from([self.ram[self.pc as usize], self.ram[self.pc as usize + 1]]);
+            if self.dt > 0 {
+                self.dt -= 1;
+                let millis = time::Duration::from_secs_f32(1f32 / 60f32);
+                thread::sleep(millis);
+            }
+            if self.st > 0 {}
+            let l_byte = self.ram[self.pc as usize];
+            let r_byte = self.ram[self.pc as usize + 1];
+            let instruction = Instruction::from([l_byte, r_byte]);
             instruction.execute(self);
         }
     }

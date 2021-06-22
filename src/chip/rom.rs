@@ -1,8 +1,10 @@
+#![allow(dead_code)]
 use crate::chip::instruction::Instruction;
 use std::fmt::{Display, Formatter, Result as FmtResult};
 use std::fs;
 use std::io::Error;
-pub struct Rom {
+/// A struct which is only used to display chip8 code in a readable manner
+pub(super) struct Rom {
     instructions: Vec<u8>,
     offset: usize,
 }

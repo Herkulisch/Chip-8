@@ -1,6 +1,5 @@
 extern crate crossterm;
 use crossterm::event::{poll, read, Event, KeyCode, KeyEvent};
-use std::io::{stdout, Stdout, Write};
 use std::time::Duration;
 
 pub fn listen_for_key() -> KeyCode {

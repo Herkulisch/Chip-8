@@ -75,8 +75,8 @@ pub enum Instruction {
     ///
     /// ---
     /// ~~Also wraps around if the sprite overflows from the right or left~~
-    /// 
-    /// All the roms I tested place their sprites correctly and therefore do not need an 
+    ///
+    /// All the roms I tested place their sprites correctly and therefore do not need an
     /// **overflow wrap** handling
     DRW(u8, u8, u8),
 }
@@ -371,7 +371,6 @@ impl Instruction {
                 chip.next();
 
                 // println!("\n{}", chip.display);
-                chip.next();
             }
             Instruction::ERR(instruction) => {
                 println!("{:X}", instruction);

@@ -14,9 +14,8 @@ pub fn listen_for_key() -> KeyCode {
     }
     key.code
 }
-
-pub fn key_pressed(key: KeyCode) -> bool {
-    match poll(Duration::from_millis(50)).unwrap() {
+pub fn key_pressed(key: KeyCode, millis: usize) -> bool {
+    match poll(Duration::from_millis(millis as u64)).unwrap() {
         true => match read().unwrap() {
             Event::Key(x) => {
                 return key == x.code;

@@ -1,4 +1,3 @@
-#![allow(unused_imports, dead_code)]
 use chip::Chip8;
 use std::env;
 

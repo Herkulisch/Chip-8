@@ -1,5 +1,6 @@
 use crate::chip::Instruction;
-use crate::ui::Screen;
+use crate::ui;
+use crate::ui::{KeyCode, Screen};
 use std::{fs, thread, time};
 
 pub struct Chip8 {
@@ -51,6 +52,9 @@ impl Chip8 {
         }
         self.pc = 0x200;
         loop {
+            if ui::key_pressed(KeyCode::Char('q'), 1) {
+                break
+            }
             if self.dt > 0 {
                 self.dt -= 1;
                 let millis = time::Duration::from_secs_f32(1f32 / 60f32);

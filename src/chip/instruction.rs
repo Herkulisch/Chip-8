@@ -1,8 +1,8 @@
 use crate::chip::Chip8;
 use crate::ui;
-use crossterm::event::KeyCode;
 use rand::Rng;
 use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
+use ui::KeyCode;
 
 pub enum Instruction {
     SYS(u16),
@@ -144,25 +144,29 @@ impl Instruction {
                 }
             }
             Instruction::SKP(key) => {
-                let pressed_key = ui::key_pressed(match key {
-                    0x0 => KeyCode::Char('0'),
-                    0x1 => KeyCode::Char('1'),
-                    0x2 => KeyCode::Char('2'),
-                    0x3 => KeyCode::Char('3'),
-                    0x4 => KeyCode::Char('4'),
-                    0x5 => KeyCode::Char('5'),
-                    0x6 => KeyCode::Char('6'),
-                    0x7 => KeyCode::Char('7'),
-                    0x8 => KeyCode::Char('8'),
-                    0x9 => KeyCode::Char('9'),
-                    0xa => KeyCode::Char('a'),
-                    0xb => KeyCode::Char('b'),
-                    0xc => KeyCode::Char('c'),
-                    0xd => KeyCode::Char('d'),
-                    0xe => KeyCode::Char('e'),
-                    0xf => KeyCode::Char('f'),
-                    _ => KeyCode::Char('f'),
-                });
+                let pressed_key = ui::key_pressed(
+                    match key {
+                        0x0 => KeyCode::Char('0'),
+                        0x1 => KeyCode::Char('1'),
+                        0x2 => KeyCode::Char('2'),
+                        0x3 => KeyCode::Char('3'),
+                        0x4 => KeyCode::Char('4'),
+                        0x5 => KeyCode::Char('5'),
+                        0x6 => KeyCode::Char('6'),
+                        0x7 => KeyCode::Char('7'),
+                        0x8 => KeyCode::Char('8'),
+                        0x9 => KeyCode::Char('9'),
+                        0xa => KeyCode::Char('a'),
+                        0xb => KeyCode::Char('b'),
+                        0xc => KeyCode::Char('c'),
+                        0xd => KeyCode::Char('d'),
+                        0xe => KeyCode::Char('e'),
+                        0xf => KeyCode::Char('f'),
+                        _ => KeyCode::Char('f'),
+                    },
+                    50,
+                );
+                println!("{:X}", key);
                 if pressed_key {
                     chip.skip();
                 } else {
@@ -170,25 +174,29 @@ impl Instruction {
                 }
             }
             Instruction::SKNP(key) => {
-                let pressed_key = ui::key_pressed(match key {
-                    0x0 => KeyCode::Char('0'),
-                    0x1 => KeyCode::Char('1'),
-                    0x2 => KeyCode::Char('2'),
-                    0x3 => KeyCode::Char('3'),
-                    0x4 => KeyCode::Char('4'),
-                    0x5 => KeyCode::Char('5'),
-                    0x6 => KeyCode::Char('6'),
-                    0x7 => KeyCode::Char('7'),
-                    0x8 => KeyCode::Char('8'),
-                    0x9 => KeyCode::Char('9'),
-                    0xa => KeyCode::Char('a'),
-                    0xb => KeyCode::Char('b'),
-                    0xc => KeyCode::Char('c'),
-                    0xd => KeyCode::Char('d'),
-                    0xe => KeyCode::Char('e'),
-                    0xf => KeyCode::Char('f'),
-                    _ => KeyCode::Char('f'),
-                });
+                let pressed_key = ui::key_pressed(
+                    match key {
+                        0x0 => KeyCode::Char('0'),
+                        0x1 => KeyCode::Char('1'),
+                        0x2 => KeyCode::Char('2'),
+                        0x3 => KeyCode::Char('3'),
+                        0x4 => KeyCode::Char('4'),
+                        0x5 => KeyCode::Char('5'),
+                        0x6 => KeyCode::Char('6'),
+                        0x7 => KeyCode::Char('7'),
+                        0x8 => KeyCode::Char('8'),
+                        0x9 => KeyCode::Char('9'),
+                        0xa => KeyCode::Char('a'),
+                        0xb => KeyCode::Char('b'),
+                        0xc => KeyCode::Char('c'),
+                        0xd => KeyCode::Char('d'),
+                        0xe => KeyCode::Char('e'),
+                        0xf => KeyCode::Char('f'),
+                        _ => KeyCode::Char('f'),
+                    },
+                    50,
+                );
+                println!("{:X} {}", key, pressed_key);
                 if !pressed_key {
                     chip.skip();
                 } else {

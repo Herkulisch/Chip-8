@@ -1,5 +1,4 @@
-extern crate crossterm;
-use crossterm::event::{poll, read, Event, KeyCode, KeyEvent};
+use crate::ui::{poll, read, Event, KeyCode, KeyEvent};
 use std::time::Duration;
 
 pub fn listen_for_key() -> KeyCode {

@@ -350,21 +350,25 @@ impl Instruction {
                             >> 7 - column as u8;
                     }
                 }
-                for sp_x in 0..sprite.len() as u8 {
-                    for sp_y in 0..*n {
-                        let dis_x = chip.v[*x as usize] + sp_x;
-                        let dis_y = chip.v[*y as usize] + sp_y;
-                        if dis_x < chip.display.get_width() && dis_y < chip.display.get_height() {
-                            let prev_value = chip.display.pixel(sp_x, sp_y);
-                            *chip.display.pixel_mut(dis_x, dis_y) ^=
+                for sp_x in 0..sprite.len() {
+                    for sp_y in 0..*n as usize {
+                        let dis_x = chip.v[*x as usize] as usize + sp_x;
+                        let dis_y = chip.v[*y as usize] as usize + sp_y;
+                        if dis_x < chip.display.get_width() as usize
+                            && dis_y < chip.display.get_height() as usize
+                        {
+                            let prev_value = chip.display.pixel(sp_x as u8, sp_y as u8);
+                            *chip.display.pixel_mut(dis_x as u8, dis_y as u8) ^=
                                 sprite[sp_x as usize][sp_y as usize];
-                            if chip.display.pixel(sp_x, sp_y) != prev_value {
+                            if chip.display.pixel(sp_x as u8, sp_y as u8) != prev_value {
                                 v_f = 1;
                             }
                         }
                     }
                 }
                 chip.v[0xf] = v_f;
+                chip.next();
+
                 // println!("\n{}", chip.display);
                 chip.next();
             }

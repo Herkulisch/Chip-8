@@ -3,7 +3,7 @@ use chip::Chip8;
 use std::env;
 
 mod chip;
-mod front_end;
+mod ui;
 
 fn main() {
     for (i, arg) in env::args().enumerate() {

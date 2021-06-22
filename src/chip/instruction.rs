@@ -1,4 +1,5 @@
 use crate::chip::Chip8;
+use crate::ui;
 use crossterm::event::KeyCode;
 use rand::Rng;
 use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
@@ -143,7 +144,7 @@ impl Instruction {
                 }
             }
             Instruction::SKP(key) => {
-                let pressed_key = chip.ui.key_pressed(match key {
+                let pressed_key = ui::key_pressed(match key {
                     0x0 => KeyCode::Char('0'),
                     0x1 => KeyCode::Char('1'),
                     0x2 => KeyCode::Char('2'),
@@ -169,7 +170,7 @@ impl Instruction {
                 }
             }
             Instruction::SKNP(key) => {
-                let pressed_key = chip.ui.key_pressed(match key {
+                let pressed_key = ui::key_pressed(match key {
                     0x0 => KeyCode::Char('0'),
                     0x1 => KeyCode::Char('1'),
                     0x2 => KeyCode::Char('2'),
@@ -216,7 +217,7 @@ impl Instruction {
                 chip.next();
             }
             Instruction::LDKR(x) => {
-                let key = match chip.ui.listen_for_key() {
+                let key = match ui::listen_for_key() {
                     KeyCode::Char(x) => match x {
                         '0' => 0x0u8,
                         '1' => 0x1,

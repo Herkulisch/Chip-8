@@ -1,6 +1,5 @@
-use crate::chip::screen::Screen;
 use crate::chip::Instruction;
-use crate::front_end::Tui;
+use crate::ui::Screen;
 use std::{fs, thread, time};
 
 pub struct Chip8 {
@@ -13,7 +12,6 @@ pub struct Chip8 {
     pub(super) stack: [u16; 16],
     pub(super) sp: u8,
     pub(super) display: Screen,
-    pub(super) ui: Tui,
 }
 
 impl Chip8 {
@@ -28,7 +26,6 @@ impl Chip8 {
             pc: 0,
             stack: [0; 16],
             sp: 0,
-            ui: Tui::new(),
         };
         chip.init();
         chip

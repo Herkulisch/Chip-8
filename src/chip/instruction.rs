@@ -196,7 +196,7 @@ impl Instruction {
                     },
                     50,
                 );
-                println!("{:X} {}", key, pressed_key);
+                // println!("{:X} {}", key, pressed_key);
                 if !pressed_key {
                     chip.skip();
                 } else {
@@ -378,7 +378,7 @@ impl Instruction {
                 chip.v[0xf] = v_f;
                 chip.next();
 
-                // println!("\n{}", chip.display);
+                chip.display.draw();
             }
             Instruction::ERR(instruction) => {
                 println!("{:X}", instruction);

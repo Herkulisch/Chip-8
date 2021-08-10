@@ -1,4 +1,13 @@
+use crossterm::{
+    cursor::{Hide, MoveRight, MoveTo, MoveToNextLine, Show},
+    execute, queue,
+    style::{self, Print},
+    terminal::{EnterAlternateScreen, LeaveAlternateScreen},
+};
+
 use std::fmt::{Debug, Display, Formatter, Result as fmtResult};
+use std::io::{stdout, Write};
+
 #[derive(Debug)]
 pub struct Screen {
     pixels: Vec<u8>,
@@ -8,6 +17,7 @@ pub struct Screen {
 
 impl Screen {
     pub fn new(width: u8, height: u8) -> Screen {
+        execute!(stdout(), EnterAlternateScreen, Hide);
         Screen {
             pixels: vec![0; height as usize * width as usize],
             height: height,
@@ -30,8 +40,33 @@ impl Screen {
         self.pixels[y as usize * self.width as usize + x as usize]
     }
 
+    pub fn draw(&self) -> () {
+        let mut stdout = stdout();
+        for (i, value) in self.pixels.iter().enumerate() {
+            if i as u8 % (self.width) == 0 && i != 0 {
+                queue!(stdout, MoveToNextLine(0));
+            }
+            queue!(
+                stdout,
+                Print(match value {
+                    0 => " ",
+                    _ => "█",
+                }),
+                MoveRight(0),
+            );
+        }
+        queue!(stdout, MoveTo(0, 0));
+        stdout.flush().unwrap();
+    }
+
     pub fn clear(&mut self) {
         self.pixels = vec![0; self.height as usize * self.width as usize];
+    }
+
+    pub fn quit(&mut self) {
+        self.clear();
+        self.draw();
+        execute!(stdout(), Show, LeaveAlternateScreen);
     }
 }
 

@@ -57,7 +57,8 @@ impl Chip8 {
         self.read_rom(path);
         loop {
             if ui::key_pressed(KeyCode::Char('q'), 1) {
-                break
+                self.display.quit();
+                break;
             }
             if self.dt > 0 {
                 self.dt -= 1;

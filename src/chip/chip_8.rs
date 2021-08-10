@@ -46,11 +46,15 @@ impl Chip8 {
         }
     }
 
-    pub fn start_rom(&mut self, path: String) {
+    fn read_rom(&mut self, path: String) {
         for (i, nn) in fs::read(path).unwrap().iter().enumerate() {
             self.ram[0x200 + i] = *nn;
         }
         self.pc = 0x200;
+    }
+
+    pub fn start_rom(&mut self, path: String) {
+        self.read_rom(path);
         loop {
             if ui::key_pressed(KeyCode::Char('q'), 1) {
                 break

@@ -259,10 +259,9 @@ impl Instruction {
                 chip.next();
             }
             Instruction::LDRBCDL(x) => {
-                let e = *x % 10;
-                let z = ((*x % 100) - e) / 10;
-                let h = *x / 100;
-                println!("{} ({}|{}|{})", x, h, z, e);
+                let e = chip.v[*x as usize] % 10;
+                let z = (chip.v[*x as usize] % 100) / 10;
+                let h = chip.v[*x as usize] / 100;
                 chip.ram[chip.i as usize] = h;
                 chip.ram[chip.i as usize + 1] = z;
                 chip.ram[chip.i as usize + 2] = e;

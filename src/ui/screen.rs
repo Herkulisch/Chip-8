@@ -1,7 +1,7 @@
 use crossterm::{
     cursor::{Hide, MoveRight, MoveTo, MoveToNextLine, Show},
     execute, queue,
-    style::{self, Print},
+    style::Print,
     terminal::{EnterAlternateScreen, LeaveAlternateScreen},
 };
 
@@ -17,7 +17,7 @@ pub struct Screen {
 
 impl Screen {
     pub fn new(width: u8, height: u8) -> Screen {
-        execute!(stdout(), EnterAlternateScreen, Hide);
+        execute!(stdout(), EnterAlternateScreen, Hide).unwrap();
         Screen {
             pixels: vec![0; height as usize * width as usize],
             height: height,
@@ -44,7 +44,7 @@ impl Screen {
         let mut stdout = stdout();
         for (i, value) in self.pixels.iter().enumerate() {
             if i as u8 % (self.width) == 0 && i != 0 {
-                queue!(stdout, MoveToNextLine(0));
+                queue!(stdout, MoveToNextLine(0)).unwrap();
             }
             queue!(
                 stdout,
@@ -53,9 +53,10 @@ impl Screen {
                     _ => "█",
                 }),
                 MoveRight(0),
-            );
+            )
+            .unwrap();
         }
-        queue!(stdout, MoveTo(0, 0));
+        queue!(stdout, MoveTo(0, 0)).unwrap();
         stdout.flush().unwrap();
     }
 
@@ -66,7 +67,7 @@ impl Screen {
     pub fn quit(&mut self) {
         self.clear();
         self.draw();
-        execute!(stdout(), Show, LeaveAlternateScreen);
+        execute!(stdout(), Show, LeaveAlternateScreen).unwrap();
     }
 }
 

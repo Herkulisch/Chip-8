@@ -46,30 +46,41 @@ impl Chip8 {
         }
     }
 
-    fn read_rom(&mut self, path: String) {
-        for (i, nn) in fs::read(path).unwrap().iter().enumerate() {
-            self.ram[0x200 + i] = *nn;
+    fn read_rom(&mut self, path: String) -> Result<(), ()> {
+        match fs::read(path) {
+            Ok(file) => {
+                for (i, nn) in file.iter().enumerate() {
+                    self.ram[0x200 + i] = *nn;
+                    self.pc = 0x200;
+                }
+                Ok(())
+            }
+            Err(_) => Err(()),
         }
-        self.pc = 0x200;
     }
 
     pub fn start_rom(&mut self, path: String) {
-        self.read_rom(path);
-        loop {
-            if ui::key_pressed(KeyCode::Char('q'), 1) {
+        match self.read_rom(path) {
+            Ok(_) => loop {
+                if ui::key_pressed(KeyCode::Char('q'), 1) {
+                    self.display.quit();
+                    break;
+                }
+                if self.dt > 0 {
+                    self.dt -= 1;
+                    let millis = time::Duration::from_secs_f32(1f32 / 60f32);
+                    thread::sleep(millis);
+                }
+                if self.st > 0 {}
+                let l_byte = self.ram[self.pc as usize];
+                let r_byte = self.ram[self.pc as usize + 1];
+                let instruction = Instruction::from([l_byte, r_byte]);
+                instruction.execute(self);
+            },
+            Err(_) => {
                 self.display.quit();
-                break;
+                println!("ROM was not found at given location");
             }
-            if self.dt > 0 {
-                self.dt -= 1;
-                let millis = time::Duration::from_secs_f32(1f32 / 60f32);
-                thread::sleep(millis);
-            }
-            if self.st > 0 {}
-            let l_byte = self.ram[self.pc as usize];
-            let r_byte = self.ram[self.pc as usize + 1];
-            let instruction = Instruction::from([l_byte, r_byte]);
-            instruction.execute(self);
         }
     }
     /// Goes to the next Instruction by adding 2 to the Program Counter

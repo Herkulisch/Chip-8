@@ -11,4 +11,7 @@ fn main() {
             chip.start_rom(arg);
         }
     }
+    if env::args().len() == 1 {
+        println!("No arguments were given, stopping execution.");
+    }
 }

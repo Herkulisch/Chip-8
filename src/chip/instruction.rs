@@ -164,9 +164,9 @@ impl Instruction {
                         0xf => KeyCode::Char('f'),
                         _ => KeyCode::Char('f'),
                     },
-                    50,
+                    15,
                 );
-                println!("{:X}", key);
+                // println!("{:X}", key);
                 if pressed_key {
                     chip.skip();
                 } else {
@@ -194,7 +194,7 @@ impl Instruction {
                         0xf => KeyCode::Char('f'),
                         _ => KeyCode::Char('f'),
                     },
-                    50,
+                    15,
                 );
                 // println!("{:X} {}", key, pressed_key);
                 if !pressed_key {

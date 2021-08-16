@@ -1,7 +1,7 @@
 use crate::chip::Instruction;
 use crate::ui;
 use crate::ui::{KeyCode, Screen};
-use std::{fs, thread, time};
+use std::{fs, thread, time::Duration};
 
 pub struct Chip8 {
     pub(super) ram: [u8; 0xfff],
@@ -66,16 +66,18 @@ impl Chip8 {
                     self.display.quit();
                     break;
                 }
+
                 if self.dt > 0 {
                     self.dt -= 1;
-                    let millis = time::Duration::from_secs_f32(1f32 / 60f32);
+                    let millis = Duration::from_secs_f32(1f32 / 60f32);
                     thread::sleep(millis);
+                } else {
+                    if self.st > 0 {}
+                    let l_byte = self.ram[self.pc as usize];
+                    let r_byte = self.ram[self.pc as usize + 1];
+                    let instruction = Instruction::from([l_byte, r_byte]);
+                    instruction.execute(self);
                 }
-                if self.st > 0 {}
-                let l_byte = self.ram[self.pc as usize];
-                let r_byte = self.ram[self.pc as usize + 1];
-                let instruction = Instruction::from([l_byte, r_byte]);
-                instruction.execute(self);
             },
             Err(_) => {
                 self.display.quit();

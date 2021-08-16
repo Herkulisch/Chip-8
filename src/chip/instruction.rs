@@ -2,7 +2,6 @@ use crate::chip::Chip8;
 use crate::ui;
 use rand::Rng;
 use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
-use ui::KeyCode;
 
 pub enum Instruction {
     SYS(u16),
@@ -29,7 +28,9 @@ pub enum Instruction {
     SIRNER(u8, u8),
     /// Skip Instruction if Register x equals Register y
     SIRER(u8, u8),
+    /// Skip Instruction if key is pressed
     SKP(u8),
+    /// Skip Instruction if key is not pressed
     SKNP(u8),
     /// Load Byte in Register x
     LDBR(u8, u8),
@@ -86,6 +87,7 @@ impl Instruction {
         match self {
             Instruction::CLS => {
                 chip.display.clear();
+                chip.display.draw();
                 chip.next();
             }
             Instruction::RET => {
@@ -144,28 +146,7 @@ impl Instruction {
                 }
             }
             Instruction::SKP(key) => {
-                let pressed_key = ui::key_pressed(
-                    match key {
-                        0x0 => KeyCode::Char('0'),
-                        0x1 => KeyCode::Char('1'),
-                        0x2 => KeyCode::Char('2'),
-                        0x3 => KeyCode::Char('3'),
-                        0x4 => KeyCode::Char('4'),
-                        0x5 => KeyCode::Char('5'),
-                        0x6 => KeyCode::Char('6'),
-                        0x7 => KeyCode::Char('7'),
-                        0x8 => KeyCode::Char('8'),
-                        0x9 => KeyCode::Char('9'),
-                        0xa => KeyCode::Char('a'),
-                        0xb => KeyCode::Char('b'),
-                        0xc => KeyCode::Char('c'),
-                        0xd => KeyCode::Char('d'),
-                        0xe => KeyCode::Char('e'),
-                        0xf => KeyCode::Char('f'),
-                        _ => KeyCode::Char('f'),
-                    },
-                    15,
-                );
+                let pressed_key = ui::key_pressed(ui::n_2_key(*key), 15);
                 // println!("{:X}", key);
                 if pressed_key {
                     chip.skip();
@@ -174,28 +155,7 @@ impl Instruction {
                 }
             }
             Instruction::SKNP(key) => {
-                let pressed_key = ui::key_pressed(
-                    match key {
-                        0x0 => KeyCode::Char('0'),
-                        0x1 => KeyCode::Char('1'),
-                        0x2 => KeyCode::Char('2'),
-                        0x3 => KeyCode::Char('3'),
-                        0x4 => KeyCode::Char('4'),
-                        0x5 => KeyCode::Char('5'),
-                        0x6 => KeyCode::Char('6'),
-                        0x7 => KeyCode::Char('7'),
-                        0x8 => KeyCode::Char('8'),
-                        0x9 => KeyCode::Char('9'),
-                        0xa => KeyCode::Char('a'),
-                        0xb => KeyCode::Char('b'),
-                        0xc => KeyCode::Char('c'),
-                        0xd => KeyCode::Char('d'),
-                        0xe => KeyCode::Char('e'),
-                        0xf => KeyCode::Char('f'),
-                        _ => KeyCode::Char('f'),
-                    },
-                    15,
-                );
+                let pressed_key = ui::key_pressed(ui::n_2_key(*key), 15);
                 // println!("{:X} {}", key, pressed_key);
                 if !pressed_key {
                     chip.skip();
@@ -225,29 +185,7 @@ impl Instruction {
                 chip.next();
             }
             Instruction::LDKR(x) => {
-                let key = match ui::listen_for_key() {
-                    KeyCode::Char(x) => match x {
-                        '0' => 0x0u8,
-                        '1' => 0x1,
-                        '2' => 0x2,
-                        '3' => 0x3,
-                        '4' => 0x4,
-                        '5' => 0x5,
-                        '6' => 0x6,
-                        '7' => 0x7,
-                        '8' => 0x8,
-                        '9' => 0x9,
-                        'a' => 0xa,
-                        'b' => 0xb,
-                        'c' => 0xc,
-                        'd' => 0xd,
-                        'e' => 0xe,
-                        'f' => 0xf,
-                        _ => 0xf,
-                    },
-                    _ => 0xf,
-                };
-                chip.v[*x as usize] = key;
+                chip.v[*x as usize] = ui::key_2_n(ui::listen_for_key());
                 chip.next();
             }
             Instruction::LDRST(x) => {

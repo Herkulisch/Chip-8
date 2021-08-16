@@ -60,19 +60,21 @@ impl Chip8 {
     }
 
     pub fn start_rom(&mut self, path: String) {
+        let delay_freq = 1f32 / 60f32;
         match self.read_rom(path) {
             Ok(_) => loop {
                 if ui::key_pressed(KeyCode::Char('q'), 1) {
                     self.display.quit();
                     break;
                 }
-
                 if self.dt > 0 {
                     self.dt -= 1;
-                    let millis = Duration::from_secs_f32(1f32 / 60f32);
+                    let millis = Duration::from_secs_f32(delay_freq);
                     thread::sleep(millis);
                 } else {
-                    if self.st > 0 {}
+                    if self.st > 0 {
+                        // Because i wanted this to work as a TUI Application, it currently does not support sound
+                    }
                     let l_byte = self.ram[self.pc as usize];
                     let r_byte = self.ram[self.pc as usize + 1];
                     let instruction = Instruction::from([l_byte, r_byte]);

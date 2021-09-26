@@ -9,5 +9,5 @@ I found a test rom, which showed me which instructions were still flawed, so I c
 The only things I could not get right were not related with the emulator or the instructions itself, but with some of the crates I used
 - I couldnt get audio working, although I found the rodio crate, which should help me. But it just could not find any of my audio devices on my machines.
 - The controls are not responsive at all, I have some troubles finding out the reason for that, but it has to do with my usage of the crossterm crate.
-- ~~A pong game rom just does not collide with the pong player, its just phases through it~~ this seems fixed now thanks to [@tobiasvl](https://github.com/tobiasvl)
+- ~~A pong game rom just does not collide with the pong player, its just phases through it.~~ This seems fixed now thanks to [@tobiasvl](https://github.com/tobiasvl)
 - Some visual glitches on games like ghostEscape

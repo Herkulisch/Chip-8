@@ -2,27 +2,33 @@ use crossterm::{
     cursor::{Hide, MoveRight, MoveTo, MoveToNextLine, Show},
     execute, queue,
     style::Print,
-    terminal::{EnterAlternateScreen, LeaveAlternateScreen},
+    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
 
 use std::fmt::{Debug, Display, Formatter, Result as fmtResult};
-use std::io::{stdout, Write};
+use std::io::{stdout, Write,Stdout};
 
 #[derive(Debug)]
 pub struct Screen {
     pixels: Vec<u8>,
     height: u8,
     width: u8,
+    output: Stdout,
 }
 
 impl Screen {
-    pub fn new(width: u8, height: u8) -> Screen {
-        execute!(stdout(), EnterAlternateScreen, Hide).unwrap();
-        Screen {
+    pub fn new(width: u8, height: u8) -> Screen {        
+        let mut screen = Screen {
             pixels: vec![0; height as usize * width as usize],
             height: height,
             width: width,
-        }
+            output: stdout()
+        };
+        
+        enable_raw_mode().unwrap();
+
+        execute!(screen.output, EnterAlternateScreen, Hide).unwrap();
+        screen
     }
     pub fn get_height(&self) -> u8 {
         self.height
@@ -41,7 +47,7 @@ impl Screen {
     }
 
     pub fn draw(&self) -> () {
-        let mut stdout = stdout();
+        let mut stdout = &self.output;
         for (i, value) in self.pixels.iter().enumerate() {
             if i as u8 % (self.width) == 0 && i != 0 {
                 queue!(stdout, MoveToNextLine(0)).unwrap();
@@ -67,7 +73,9 @@ impl Screen {
     pub fn quit(&mut self) {
         self.clear();
         self.draw();
-        execute!(stdout(), Show, LeaveAlternateScreen).unwrap();
+        execute!(&self.output, Show, LeaveAlternateScreen).unwrap();
+
+        disable_raw_mode().unwrap();
     }
 }
 

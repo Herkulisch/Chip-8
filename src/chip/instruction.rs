@@ -303,10 +303,11 @@ impl Instruction {
                         if dis_x < chip.display.get_width() as usize
                             && dis_y < chip.display.get_height() as usize
                         {
-                            let prev_value = chip.display.pixel(sp_x as u8, sp_y as u8);
+                            let prev_value = chip.display.pixel(dis_x as u8, dis_y as u8);
                             *chip.display.pixel_mut(dis_x as u8, dis_y as u8) ^=
                                 sprite[sp_x as usize][sp_y as usize];
-                            if chip.display.pixel(sp_x as u8, sp_y as u8) != prev_value {
+                            if chip.display.pixel(dis_x as u8, dis_y as u8) == 0 && prev_value == 1
+                            {
                                 v_f = 1;
                             }
                         }

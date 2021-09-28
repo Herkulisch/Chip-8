@@ -1,12 +1,12 @@
 use crossterm::{
-    cursor::{Hide, MoveRight, MoveTo, MoveToNextLine, Show},
+    cursor::{DisableBlinking, EnableBlinking, Hide, MoveRight, MoveTo, MoveToNextLine, Show},
     execute, queue,
     style::Print,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
 
 use std::fmt::{Debug, Display, Formatter, Result as fmtResult};
-use std::io::{stdout, Write,Stdout};
+use std::io::{stdout, Stdout, Write};
 
 #[derive(Debug)]
 pub struct Screen {
@@ -17,17 +17,16 @@ pub struct Screen {
 }
 
 impl Screen {
-    pub fn new(width: u8, height: u8) -> Screen {        
+    pub fn new(width: u8, height: u8) -> Screen {
         let mut screen = Screen {
             pixels: vec![0; height as usize * width as usize],
             height: height,
             width: width,
-            output: stdout()
+            output: stdout(),
         };
-        
         enable_raw_mode().unwrap();
 
-        execute!(screen.output, EnterAlternateScreen, Hide).unwrap();
+        execute!(screen.output, EnterAlternateScreen, Hide, DisableBlinking).unwrap();
         screen
     }
     pub fn get_height(&self) -> u8 {
@@ -48,6 +47,7 @@ impl Screen {
 
     pub fn draw(&self) -> () {
         let mut stdout = &self.output;
+        queue!(stdout, MoveTo(0, 0)).unwrap();
         for (i, value) in self.pixels.iter().enumerate() {
             if i as u8 % (self.width) == 0 && i != 0 {
                 queue!(stdout, MoveToNextLine(0)).unwrap();
@@ -62,7 +62,6 @@ impl Screen {
             )
             .unwrap();
         }
-        queue!(stdout, MoveTo(0, 0)).unwrap();
         stdout.flush().unwrap();
     }
 
@@ -73,7 +72,7 @@ impl Screen {
     pub fn quit(&mut self) {
         self.clear();
         self.draw();
-        execute!(&self.output, Show, LeaveAlternateScreen).unwrap();
+        execute!(&self.output, Show, EnableBlinking, LeaveAlternateScreen).unwrap();
 
         disable_raw_mode().unwrap();
     }

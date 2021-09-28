@@ -61,15 +61,14 @@ impl Chip8 {
 
     pub fn start_rom(&mut self, path: String) {
         let delay_freq = 1f32 / 60f32;
+        let millis = Duration::from_secs_f32(delay_freq);
         match self.read_rom(path) {
             Ok(_) => loop {
                 if ui::key_pressed(KeyCode::Char('q'), 1) {
-                    self.display.quit();
                     break;
                 }
                 if self.dt > 0 {
                     self.dt -= 1;
-                    let millis = Duration::from_secs_f32(delay_freq);
                     thread::sleep(millis);
                 } else {
                     if self.st > 0 {
@@ -82,10 +81,10 @@ impl Chip8 {
                 }
             },
             Err(_) => {
-                self.display.quit();
                 println!("ROM was not found at given location");
             }
         }
+        self.display.quit();
     }
     /// Goes to the next Instruction by adding 2 to the Program Counter
     pub(super) fn next(&mut self) {

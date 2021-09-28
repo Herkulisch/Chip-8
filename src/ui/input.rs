@@ -28,7 +28,7 @@ pub fn key_pressed(key: KeyCode, millis: usize) -> bool {
 }
 
 /// Takes a nibble and translates it into a KeyCode
-pub fn n_2_key(key_nibble: u8) -> KeyCode {
+pub fn nibble_2_key(key_nibble: u8) -> KeyCode {
     match key_nibble {
         0x0 => KeyCode::Char('0'),
         0x1 => KeyCode::Char('1'),
@@ -53,7 +53,7 @@ pub fn n_2_key(key_nibble: u8) -> KeyCode {
 /// Takes a KeyCode and translates it to the corresponding chip8 nibble
 ///
 /// If the KeyCode is no valid chip8 nibble it translates it to the character f
-pub fn key_2_n(key: KeyCode) -> u8 {
+pub fn key_2_nibble(key: KeyCode) -> u8 {
     match key {
         KeyCode::Char(x) => match x {
             '0' => 0x0,

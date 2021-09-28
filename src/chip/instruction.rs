@@ -146,18 +146,16 @@ impl Instruction {
                 }
             }
             Instruction::SKP(key) => {
-                let pressed_key = ui::key_pressed(ui::n_2_key(*key), 15);
-                // println!("{:X}", key);
-                if pressed_key {
+                let key_pressed = ui::key_pressed(ui::nibble_2_key(*key), 15);
+                if key_pressed {
                     chip.skip();
                 } else {
                     chip.next()
                 }
             }
             Instruction::SKNP(key) => {
-                let pressed_key = ui::key_pressed(ui::n_2_key(*key), 15);
-                // println!("{:X} {}", key, pressed_key);
-                if !pressed_key {
+                let key_pressed = ui::key_pressed(ui::nibble_2_key(*key), 15);
+                if !key_pressed {
                     chip.skip();
                 } else {
                     chip.next()
@@ -185,7 +183,7 @@ impl Instruction {
                 chip.next();
             }
             Instruction::LDKR(x) => {
-                chip.v[*x as usize] = ui::key_2_n(ui::listen_for_key());
+                chip.v[*x as usize] = ui::key_2_nibble(ui::listen_for_key());
                 chip.next();
             }
             Instruction::LDRST(x) => {

@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-use crate::ui::{poll, read, Event, KeyCode, KeyEvent};
+use crate::app::ui::{poll, read, Event, KeyCode, KeyEvent};
 use std::time::Duration;
 
 ///Blocks until a key is pressed and returns the pressed key

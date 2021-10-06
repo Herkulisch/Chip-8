@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-use crate::chip::instruction::Instruction;
+use crate::app::chip::instruction::Instruction;
 use std::fmt::{Display, Formatter, Result as FmtResult};
 use std::fs;
 use std::io::Error;

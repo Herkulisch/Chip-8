@@ -4,7 +4,7 @@ use std::env;
 mod chip;
 mod ui;
 
-fn main() {
+pub fn start() {
     for (i, arg) in env::args().enumerate() {
         if i == 1 {
             let mut chip = Chip8::new();

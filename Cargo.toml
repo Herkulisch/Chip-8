@@ -3,6 +3,11 @@ name = "chip_8"
 version = "0.8.0"
 authors = ["Herculean <55994229+Herkulisch@users.noreply.github.com>"]
 edition = "2018"
+exclude = ["target", "Cargo.lock"]
+
+[lib]
+name = "crossterm"
+path = "src/lib.rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

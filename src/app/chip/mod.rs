@@ -1,7 +1,12 @@
-use crate::chip::Instruction;
-use crate::ui;
-use crate::ui::{KeyCode, Screen};
+use crate::app::{ui, ui::KeyCode};
+use display::Display;
+pub use instruction::Instruction;
 use std::{fs, thread, time::Duration};
+
+mod display;
+mod instruction;
+mod rom;
+mod sprite;
 
 pub struct Chip8 {
     pub(super) ram: [u8; 0xfff],
@@ -12,8 +17,8 @@ pub struct Chip8 {
     pub(super) pc: u16,
     pub(super) stack: [u16; 16],
     pub(super) sp: u8,
-    pub(super) display: Screen,
-    pub(super) pressed_key: Option<KeyCode>,
+    pub(super) display: Display,
+    pub pressed_key: Option<KeyCode>,
 }
 
 const SPRITES: [u8; 80] = [
@@ -28,7 +33,7 @@ impl Chip8 {
     pub fn new() -> Self {
         let mut chip = Chip8 {
             ram: [0; 0xfff],
-            display: Screen::new(64, 32),
+            display: Display::new(64, 32),
             v: [0; 16],
             dt: 0,
             st: 0,
@@ -90,7 +95,6 @@ impl Chip8 {
                 println!("ROM was not found at given location");
             }
         }
-        self.display.quit();
     }
     /// Goes to the next Instruction by adding 2 to the Program Counter
     pub(super) fn next(&mut self) {

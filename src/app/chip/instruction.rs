@@ -1,5 +1,4 @@
-use crate::chip::Chip8;
-use crate::ui;
+use crate::app::{chip::Chip8, ui};
 use rand::Rng;
 use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
 
@@ -87,7 +86,6 @@ impl Instruction {
         match self {
             Instruction::CLS => {
                 chip.display.clear();
-                chip.display.draw();
                 chip.next();
             }
             Instruction::RET => {
@@ -313,8 +311,6 @@ impl Instruction {
                 }
                 chip.v[0xf] = v_f;
                 chip.next();
-
-                chip.display.draw();
             }
             Instruction::ERR(instruction) => {
                 println!("{:X}", instruction);

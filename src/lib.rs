@@ -4,11 +4,13 @@ mod chip;
 #[cfg(test)]
 mod tests {
     use super::chip::Chip8;
+    /// This should just panic
     #[test]
     fn empty_rom() {
         let mut chip = Chip8::new();
         chip.execute();
     }
+    /// This should run infinetly
     #[test]
     fn breakout() {
         let mut chip = Chip8::new();

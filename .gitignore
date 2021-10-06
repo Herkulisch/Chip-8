@@ -2,3 +2,4 @@
 /assets
 Chip-8.code-workspace
 .vscode/
+Cargo.lock

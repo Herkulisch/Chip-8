@@ -1,12 +1,12 @@
-use crate::app::{ui, ui::KeyCode};
 use display::Display;
+use input::KeyCode;
 pub use instruction::Instruction;
 use std::{fs, thread, time::Duration};
 
+mod debug;
 mod display;
+mod input;
 mod instruction;
-mod rom;
-mod sprite;
 
 pub struct Chip8 {
     pub(super) ram: [u8; 0xfff],
@@ -71,10 +71,6 @@ impl Chip8 {
         let millis = Duration::from_secs_f32(delay_freq);
         match self.read_rom(path) {
             Ok(_) => loop {
-                self.pressed_key = ui::pressed_key(Duration::from_millis(1));
-                if self.pressed_key == Some(KeyCode::Char('q')) {
-                    break;
-                }
                 if self.dt > 0 || self.st > 0 {
                     if self.dt > 0 {
                         self.dt -= 1;

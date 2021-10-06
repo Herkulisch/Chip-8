@@ -1,4 +1,4 @@
-use crate::app::{chip::Chip8, ui};
+use super::{input, Chip8};
 use rand::Rng;
 use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
 
@@ -144,7 +144,7 @@ impl Instruction {
                 }
             }
             Instruction::SKP(key) => {
-                let key_pressed = chip.pressed_key == Some(ui::nibble_2_key(*key));
+                let key_pressed = chip.pressed_key == Some(input::nibble_2_key(*key));
                 if key_pressed {
                     chip.skip();
                 } else {
@@ -152,7 +152,7 @@ impl Instruction {
                 }
             }
             Instruction::SKNP(key) => {
-                let key_pressed = chip.pressed_key == Some(ui::nibble_2_key(*key));
+                let key_pressed = chip.pressed_key == Some(input::nibble_2_key(*key));
                 if !key_pressed {
                     chip.skip();
                 } else {
@@ -181,7 +181,7 @@ impl Instruction {
                 chip.next();
             }
             Instruction::LDKR(x) => {
-                chip.v[*x as usize] = ui::key_2_nibble(ui::listen_for_key());
+                chip.v[*x as usize] = input::key_2_nibble(input::listen_for_key());
                 chip.next();
             }
             Instruction::LDRST(x) => {

@@ -1,49 +1,50 @@
 #![allow(dead_code)]
-use crate::app::ui::{poll, read, Event, KeyCode, KeyEvent};
-use std::time::Duration;
-
-///Blocks until a key is pressed and returns the pressed key
-pub fn listen_for_key() -> KeyCode {
-    let key: KeyEvent;
-    loop {
-        match read().unwrap() {
-            Event::Key(x) => {
-                key = x;
-                break;
-            }
-            _ => (),
-        }
-    }
-    key.code
-}
-pub fn key_pressed(key: KeyCode, duration: Duration) -> bool {
-    match poll(duration).unwrap() {
-        true => match read().unwrap() {
-            Event::Key(x) => {
-                return key == x.code;
-            }
-            _ => false,
-        },
-        _ => false,
-    }
-}
-
-pub fn pressed_key(duration: Duration) -> Option<KeyCode> {
-    let mut key = None;
-    match poll(duration).unwrap() {
-        true => match read().unwrap() {
-            Event::Key(x) => {
-                key = Some(x.code);
-            }
-            _ => {}
-        },
-        _ => {}
-    };
-    key
+#[derive(Debug, PartialOrd, PartialEq, Eq)]
+pub enum KeyCode {
+    /// Backspace key.
+    Backspace,
+    /// Enter key.
+    Enter,
+    /// Left arrow key.
+    Left,
+    /// Right arrow key.
+    Right,
+    /// Up arrow key.
+    Up,
+    /// Down arrow key.
+    Down,
+    /// Home key.
+    Home,
+    /// End key.
+    End,
+    /// Page up key.
+    PageUp,
+    /// Page dow key.
+    PageDown,
+    /// Tab key.
+    Tab,
+    /// Shift + Tab key.
+    BackTab,
+    /// Delete key.
+    Delete,
+    /// Insert key.
+    Insert,
+    /// F key.
+    ///
+    /// `KeyCode::F(1)` represents F1 key, etc.
+    F(u8),
+    /// A character.
+    ///
+    /// `KeyCode::Char('c')` represents `c` character, etc.
+    Char(char),
+    /// Null.
+    Null,
+    /// Escape key.
+    Esc,
 }
 
 /// Takes a nibble and translates it into a KeyCode
-pub fn nibble_2_key(key_nibble: u8) -> KeyCode {
+pub(super) fn nibble_2_key(key_nibble: u8) -> KeyCode {
     match key_nibble {
         0x0 => KeyCode::Char('0'),
         0x1 => KeyCode::Char('1'),
@@ -68,7 +69,7 @@ pub fn nibble_2_key(key_nibble: u8) -> KeyCode {
 /// Takes a KeyCode and translates it to the corresponding chip8 nibble
 ///
 /// If the KeyCode is no valid chip8 nibble it translates it to the character f
-pub fn key_2_nibble(key: KeyCode) -> u8 {
+pub(super) fn key_2_nibble(key: KeyCode) -> u8 {
     match key {
         KeyCode::Char(x) => match x {
             '0' => 0x0,
@@ -91,4 +92,10 @@ pub fn key_2_nibble(key: KeyCode) -> u8 {
         },
         _ => 0xf,
     }
+}
+
+/// I am looking for a workaround to keep this as a library but still letting the emulator wait
+/// until a key is pressed without having to call a specific extern function
+pub(super) fn listen_for_key() -> KeyCode {
+    unimplemented!();
 }

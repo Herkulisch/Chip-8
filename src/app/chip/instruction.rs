@@ -119,28 +119,28 @@ impl Instruction {
                 if chip.v[*x as usize] == *byte {
                     chip.skip();
                 } else {
-                    chip.next()
+                    chip.next();
                 }
             }
             Instruction::SIRNEB(x, byte) => {
                 if chip.v[*x as usize] != *byte {
                     chip.skip();
                 } else {
-                    chip.next()
+                    chip.next();
                 }
             }
             Instruction::SIRER(x, y) => {
                 if chip.v[*x as usize] == chip.v[*y as usize] {
                     chip.skip();
                 } else {
-                    chip.next()
+                    chip.next();
                 }
             }
             Instruction::SIRNER(x, y) => {
                 if chip.v[*x as usize] != chip.v[*y as usize] {
                     chip.skip();
                 } else {
-                    chip.next()
+                    chip.next();
                 }
             }
             Instruction::SKP(key) => {
@@ -148,7 +148,7 @@ impl Instruction {
                 if key_pressed {
                     chip.skip();
                 } else {
-                    chip.next()
+                    chip.next();
                 }
             }
             Instruction::SKNP(key) => {
@@ -156,7 +156,7 @@ impl Instruction {
                 if !key_pressed {
                     chip.skip();
                 } else {
-                    chip.next()
+                    chip.next();
                 }
             }
 

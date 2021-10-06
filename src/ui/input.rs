@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use crate::ui::{poll, read, Event, KeyCode, KeyEvent};
 use std::time::Duration;
 
@@ -15,8 +16,8 @@ pub fn listen_for_key() -> KeyCode {
     }
     key.code
 }
-pub fn key_pressed(key: KeyCode, millis: usize) -> bool {
-    match poll(Duration::from_millis(millis as u64)).unwrap() {
+pub fn key_pressed(key: KeyCode, duration: Duration) -> bool {
+    match poll(duration).unwrap() {
         true => match read().unwrap() {
             Event::Key(x) => {
                 return key == x.code;
@@ -25,6 +26,20 @@ pub fn key_pressed(key: KeyCode, millis: usize) -> bool {
         },
         _ => false,
     }
+}
+
+pub fn pressed_key(duration: Duration) -> Option<KeyCode> {
+    let mut key = None;
+    match poll(duration).unwrap() {
+        true => match read().unwrap() {
+            Event::Key(x) => {
+                key = Some(x.code);
+            }
+            _ => {}
+        },
+        _ => {}
+    };
+    key
 }
 
 /// Takes a nibble and translates it into a KeyCode

@@ -13,6 +13,7 @@ pub struct Chip8 {
     pub(super) stack: [u16; 16],
     pub(super) sp: u8,
     pub(super) display: Screen,
+    pub(super) pressed_key: Option<KeyCode>,
 }
 
 const SPRITES: [u8; 80] = [
@@ -35,6 +36,7 @@ impl Chip8 {
             pc: 0,
             stack: [0; 16],
             sp: 0,
+            pressed_key: None,
         };
         chip.init();
         chip
@@ -64,16 +66,20 @@ impl Chip8 {
         let millis = Duration::from_secs_f32(delay_freq);
         match self.read_rom(path) {
             Ok(_) => loop {
-                if ui::key_pressed(KeyCode::Char('q'), 1) {
+                self.pressed_key = ui::pressed_key(Duration::from_millis(1));
+                if self.pressed_key == Some(KeyCode::Char('q')) {
                     break;
                 }
-                if self.dt > 0 {
-                    self.dt -= 1;
-                    thread::sleep(millis);
-                } else {
+                if self.dt > 0 || self.st > 0 {
+                    if self.dt > 0 {
+                        self.dt -= 1;
+                    }
                     if self.st > 0 {
+                        self.st -= 1
                         // Because i wanted this to work as a TUI Application, it currently does not support sound
                     }
+                    thread::sleep(millis);
+                } else {
                     let l_byte = self.ram[self.pc as usize];
                     let r_byte = self.ram[self.pc as usize + 1];
                     let instruction = Instruction::from([l_byte, r_byte]);
@@ -88,10 +94,10 @@ impl Chip8 {
     }
     /// Goes to the next Instruction by adding 2 to the Program Counter
     pub(super) fn next(&mut self) {
-        self.pc += 2;
+        self.pc += 1 * 2;
     }
     /// Skips the next Instruction by adding 4 to the Program Counter
     pub(super) fn skip(&mut self) {
-        self.pc += 4;
+        self.pc += 2 * 2;
     }
 }

@@ -57,7 +57,7 @@ impl Chip8 {
 
     ///Reads the ROM and stores it into the RAM starting from address `0x200`
     pub fn read_rom(&mut self, path: String) -> Result<(), &str> {
-        if self.rom_read {
+        if !self.rom_read {
             match fs::read(path) {
                 Ok(file) => {
                     for (i, nn) in file.iter().enumerate() {

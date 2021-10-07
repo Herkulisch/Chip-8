@@ -1,27 +1,54 @@
+use chip::{Chip, ChipKey};
+use std::time::Duration;
+use wasm_bindgen::prelude::*;
+
 #[allow(dead_code)]
 mod chip;
 
 #[cfg(test)]
 mod tests {
-    use super::chip::Chip8;
+    use crate::chip::Chip;
     /// This should just panic
     #[test]
     fn empty_rom() {
-        let mut chip = Chip8::new();
-        chip.execute();
+        let mut chip = Chip::new();
+        chip.tick();
     }
     /// This should run infinetly
     #[test]
     fn breakout() {
-        let mut chip = Chip8::new();
+        let mut chip = Chip::new();
         chip.read_rom(String::from("./assets/games/br8kout.ch8"))
             .unwrap();
         loop {
-            println!("{}", chip.execute());
+            println!("{}", chip.tick());
         }
     }
 }
+#[wasm_bindgen]
+pub struct ChipController {
+    chip: Chip,
+}
 
+#[wasm_bindgen]
+impl ChipController {
+    pub fn new() -> Self {
+        ChipController { chip: Chip::new() }
+    }
+
+    /// Execute Instructions until the time given in ms is over
+    pub fn tick_for(&mut self, ms: usize) {
+        self.chip.tick_for(Duration::from_millis(ms as u64));
+    }
+
+    pub fn tick(&mut self) {
+        self.chip.tick();
+    }
+
+    pub fn set_pressed_key(&mut self, key: Option<ChipKey>) {
+        self.chip.set_key(key);
+    }
+}
 
 /*
     pub fn execute(&mut self, path: String) {

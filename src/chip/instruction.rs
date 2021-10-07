@@ -1,4 +1,4 @@
-use super::{input, Chip8};
+use super::{input::ChipKey, Chip};
 use rand::Rng;
 use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
 
@@ -82,7 +82,7 @@ pub enum Instruction {
 }
 
 impl Instruction {
-    pub fn execute(&self, chip: &mut Chip8) {
+    pub fn execute(&self, chip: &mut Chip) {
         match self {
             Instruction::CLS => {
                 chip.display.clear();
@@ -95,7 +95,7 @@ impl Instruction {
             }
             Instruction::SYS(address) => {
                 println!(
-                    "This Instruction should not be used, by most roms: {:X}",
+                    "This Instruction should not be used, by most of the roms: {:X}",
                     address
                 );
                 chip.next();
@@ -144,19 +144,31 @@ impl Instruction {
                 }
             }
             Instruction::SKP(key) => {
-                let key_pressed = chip.pressed_key == Some(input::nibble_2_key(*key));
-                if key_pressed {
-                    chip.skip();
-                } else {
-                    chip.next();
+                let key = ChipKey::from(*key as usize);
+                match chip.pressed_key {
+                    Some(k) => {
+                        let key_pressed = k == key;
+                        if key_pressed {
+                            chip.skip();
+                        } else {
+                            chip.next();
+                        }
+                    }
+                    None => chip.next(),
                 }
             }
             Instruction::SKNP(key) => {
-                let key_pressed = chip.pressed_key == Some(input::nibble_2_key(*key));
-                if !key_pressed {
-                    chip.skip();
-                } else {
-                    chip.next();
+                let key = ChipKey::from(*key as usize);
+                match chip.pressed_key {
+                    Some(k) => {
+                        let key_pressed = k == key;
+                        if !key_pressed {
+                            chip.skip();
+                        } else {
+                            chip.next();
+                        }
+                    }
+                    None => chip.skip(),
                 }
             }
 
@@ -180,10 +192,13 @@ impl Instruction {
                 chip.dt = chip.v[*x as usize];
                 chip.next();
             }
-            Instruction::LDKR(x) => {
-                chip.v[*x as usize] = input::key_2_nibble(input::listen_for_key());
-                chip.next();
-            }
+            Instruction::LDKR(x) => match chip.pressed_key {
+                Some(k) => {
+                    chip.v[*x as usize] = k as u8;
+                    chip.next();
+                }
+                None => {}
+            },
             Instruction::LDRST(x) => {
                 chip.st = chip.v[*x as usize];
                 chip.next();

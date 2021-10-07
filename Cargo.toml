@@ -6,11 +6,16 @@ edition = "2018"
 exclude = ["target", "Cargo.lock"]
 
 [lib]
-name = "crossterm"
-path = "src/lib.rs"
+crate-type = ["cdylib", "rlib"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+
 [dependencies]
 rand = "0.8.3"
-crossterm = "0.20"
+getrandom = { version = "0.2", features = ["js"] }
+wasm-bindgen = "0.2.78"
+
+[profile.release]
+# Tell `rustc` to optimize for small code size.
+opt-level = "s"

@@ -1,7 +1,9 @@
 use display::Display;
-use input::KeyCode;
+pub use input::ChipKey;
+pub use input::KeyCode;
 pub use instruction::Instruction;
 use std::fs;
+use std::time::{Duration, Instant};
 
 mod debug;
 mod display;
@@ -16,7 +18,7 @@ const SPRITES: [u8; 80] = [
     0xF0, 0xE0, 0x90, 0x90, 0x90, 0xE0, 0xF0, 0x80, 0xF0, 0x80, 0xF0, 0xF0, 0x80, 0xF0, 0x80, 0x80,
 ];
 
-pub struct Chip8 {
+pub struct Chip {
     pub(super) ram: [u8; 0xfff],
     pub(super) v: [u8; 16],
     pub(super) dt: u8,
@@ -25,14 +27,14 @@ pub struct Chip8 {
     pub(super) pc: u16,
     pub(super) stack: [u16; 16],
     pub(super) sp: u8,
-    pub display: Display,
-    pub pressed_key: Option<KeyCode>,
+    pub(super) display: Display,
+    pressed_key: Option<ChipKey>,
     rom_read: bool,
 }
 
-impl Chip8 {
-    pub fn new() -> Self {
-        let mut chip = Chip8 {
+impl Chip {
+    pub(crate) fn new() -> Self {
+        let mut chip = Chip {
             ram: [0; 0xfff],
             display: Display::new(64, 32),
             v: [0; 16],
@@ -56,7 +58,7 @@ impl Chip8 {
     }
 
     ///Reads the ROM and stores it into the RAM starting from address `0x200`
-    pub fn read_rom(&mut self, path: String) -> Result<(), &str> {
+    pub(crate) fn read_rom(&mut self, path: String) -> Result<(), &str> {
         if !self.rom_read {
             match fs::read(path) {
                 Ok(file) => {
@@ -75,17 +77,34 @@ impl Chip8 {
     }
 
     ///Removes the ROM from the RAM and makes the chip ready to read another ROM
-    pub fn remove_rom(&mut self) {
+    pub(crate) fn remove_rom(&mut self) {
         self.ram = [0; 0xfff];
         self.init();
         self.display.clear();
         self.rom_read = false;
     }
 
+    pub(crate) fn set_key(&mut self, key: Option<ChipKey>) {
+        self.pressed_key = key;
+    }
+
+    /// Is like tick but keeps executing instructions for the given duration
+    pub(crate) fn tick_for(&mut self, duration: Duration) -> Vec<Instruction> {
+        let mut instructions = Vec::new();
+        let start = Instant::now();
+        while Instant::now() - start < duration {
+            let l_byte = self.ram[self.pc as usize];
+            let r_byte = self.ram[self.pc as usize + 1];
+            let instruction = Instruction::from([l_byte, r_byte]);
+            instruction.execute(self);
+            instructions.push(instruction);
+        }
+        instructions
+    }
+
     ///Executes the Instruction that its currently stored at position pc and pc+1
-    ///
-    /// and returns it
-    pub fn execute(&mut self) -> Instruction {
+    ///and returns it
+    pub(crate) fn tick(&mut self) -> Instruction {
         let l_byte = self.ram[self.pc as usize];
         let r_byte = self.ram[self.pc as usize + 1];
         let instruction = Instruction::from([l_byte, r_byte]);

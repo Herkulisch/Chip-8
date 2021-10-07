@@ -1,5 +1,7 @@
 #![allow(dead_code)]
-#[derive(Debug, PartialOrd, PartialEq, Eq)]
+use wasm_bindgen::prelude::*;
+
+#[derive(Debug, PartialOrd, PartialEq, Eq, Copy, Clone)]
 pub enum KeyCode {
     /// Backspace key.
     Backspace,
@@ -43,59 +45,49 @@ pub enum KeyCode {
     Esc,
 }
 
-/// Takes a nibble and translates it into a KeyCode
-pub(super) fn nibble_2_key(key_nibble: u8) -> KeyCode {
-    match key_nibble {
-        0x0 => KeyCode::Char('0'),
-        0x1 => KeyCode::Char('1'),
-        0x2 => KeyCode::Char('2'),
-        0x3 => KeyCode::Char('3'),
-        0x4 => KeyCode::Char('4'),
-        0x5 => KeyCode::Char('5'),
-        0x6 => KeyCode::Char('6'),
-        0x7 => KeyCode::Char('7'),
-        0x8 => KeyCode::Char('8'),
-        0x9 => KeyCode::Char('9'),
-        0xa => KeyCode::Char('a'),
-        0xb => KeyCode::Char('b'),
-        0xc => KeyCode::Char('c'),
-        0xd => KeyCode::Char('d'),
-        0xe => KeyCode::Char('e'),
-        0xf => KeyCode::Char('f'),
-        _ => KeyCode::Char('f'),
-    }
+#[wasm_bindgen]
+#[derive(Debug, PartialOrd, PartialEq, Eq, Copy, Clone)]
+pub enum ChipKey {
+    Zero = 0x0,
+    One = 0x1,
+    Two = 0x2,
+    Three = 0x3,
+    Four = 0x4,
+    Five = 0x5,
+    Six = 0x6,
+    Seven = 0x7,
+    Eight = 0x8,
+    Nine = 0x9,
+    A = 0xA,
+    B = 0xB,
+    C = 0xC,
+    D = 0xD,
+    E = 0xE,
+    F = 0xF,
 }
 
-/// Takes a KeyCode and translates it to the corresponding chip8 nibble
-///
-/// If the KeyCode is no valid chip8 nibble it translates it to the character f
-pub(super) fn key_2_nibble(key: KeyCode) -> u8 {
-    match key {
-        KeyCode::Char(x) => match x {
-            '0' => 0x0,
-            '1' => 0x1,
-            '2' => 0x2,
-            '3' => 0x3,
-            '4' => 0x4,
-            '5' => 0x5,
-            '6' => 0x6,
-            '7' => 0x7,
-            '8' => 0x8,
-            '9' => 0x9,
-            'a' => 0xa,
-            'b' => 0xb,
-            'c' => 0xc,
-            'd' => 0xd,
-            'e' => 0xe,
-            'f' => 0xf,
-            _ => 0xf,
-        },
-        _ => 0xf,
+/// Tranlates any unsigned number into a Chip8 Key if the numer is greater than 4 bit it will
+/// be mapped to the ChipKey F
+impl From<usize> for ChipKey {
+    fn from(nibble: usize) -> Self {
+        match nibble {
+            0x0 => ChipKey::Zero,
+            0x1 => ChipKey::One,
+            0x2 => ChipKey::Two,
+            0x3 => ChipKey::Three,
+            0x4 => ChipKey::Four,
+            0x5 => ChipKey::Five,
+            0x6 => ChipKey::Six,
+            0x7 => ChipKey::Seven,
+            0x8 => ChipKey::Eight,
+            0x9 => ChipKey::Nine,
+            0xA => ChipKey::A,
+            0xB => ChipKey::B,
+            0xC => ChipKey::C,
+            0xD => ChipKey::D,
+            0xE => ChipKey::E,
+            0xF => ChipKey::F,
+            _ => ChipKey::F, // This should never happen
+        }
     }
-}
-
-/// I am looking for a workaround to keep this as a library but still letting the emulator wait
-/// until a key is pressed without having to call a specific extern function
-pub(super) fn listen_for_key() -> KeyCode {
-    unimplemented!();
 }

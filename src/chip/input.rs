@@ -1,5 +1,4 @@
 #![allow(dead_code)]
-use wasm_bindgen::prelude::*;
 
 #[derive(Debug, PartialOrd, PartialEq, Eq, Copy, Clone)]
 pub enum KeyCode {
@@ -45,7 +44,6 @@ pub enum KeyCode {
     Esc,
 }
 
-#[wasm_bindgen]
 #[derive(Debug, PartialOrd, PartialEq, Eq, Copy, Clone)]
 pub enum ChipKey {
     Zero = 0x0,

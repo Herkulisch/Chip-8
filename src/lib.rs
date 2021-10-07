@@ -1,6 +1,5 @@
 use chip::{Chip, ChipKey};
 use std::time::Duration;
-use wasm_bindgen::prelude::*;
 
 #[allow(dead_code)]
 mod chip;
@@ -25,12 +24,12 @@ mod tests {
         }
     }
 }
-#[wasm_bindgen]
+
 pub struct ChipController {
     chip: Chip,
 }
 
-#[wasm_bindgen]
+
 impl ChipController {
     pub fn new() -> Self {
         ChipController { chip: Chip::new() }

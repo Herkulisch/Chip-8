@@ -52,6 +52,7 @@ impl Chip {
         chip
     }
 
+    ///Loads the Spritebytes into the RAM
     fn init(&mut self) {
         for (i, sprite) in SPRITES.iter().enumerate() {
             self.ram[i] = *sprite;
@@ -102,11 +103,12 @@ impl Chip {
         self.rom_read = false;
     }
 
+    ///Sets the key thats currently pressed
     pub(crate) fn set_key(&mut self, key: Option<ChipKey>) {
         self.pressed_key = key;
     }
 
-    /// Is like tick but keeps executing instructions for the given duration
+    ///Is like tick but keeps executing instructions for the given duration
     pub(crate) fn tick_for(&mut self, duration: Duration) -> Vec<Instruction> {
         let mut instructions = Vec::new();
         let start = Instant::now();
@@ -129,11 +131,13 @@ impl Chip {
         instruction.execute(self);
         instruction
     }
-    /// Goes to the next Instruction by adding 2 to the Program Counter
+
+    ///Goes to the next Instruction by adding 2 to the Program Counter
     pub(super) fn next(&mut self) {
         self.pc += 1 * 2;
     }
-    /// Skips the next Instruction by adding 4 to the Program Counter
+
+    ///Skips the next Instruction by adding 4 to the Program Counter
     pub(super) fn skip(&mut self) {
         self.pc += 2 * 2;
     }

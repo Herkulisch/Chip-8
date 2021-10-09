@@ -1,3 +1,4 @@
+use super::Byte;
 use display::ChipDisplay;
 pub use input::ChipKey;
 pub use input::KeyCode;
@@ -57,8 +58,8 @@ impl Chip {
         }
     }
 
-    ///Reads the ROM and stores it into the RAM starting from address `0x200`
-    pub(crate) fn read_rom(&mut self, path: String) -> Result<(), &str> {
+    ///Reads the ROM from a file and stores it into the RAM starting from address `0x200`
+    pub(crate) fn read_rom_path(&mut self, path: String) -> Result<(), &str> {
         if !self.rom_read {
             match fs::read(path) {
                 Ok(file) => {
@@ -78,6 +79,15 @@ impl Chip {
 
     ///Removes the ROM from the RAM and makes the chip ready to read another ROM
     pub(crate) fn remove_rom(&mut self) {
+    ///Gets the ROM as a vector of bytes and stores it into the RAM starting from address `0x200`
+    pub(crate) fn read_rom_bytes(&mut self, file: Vec<Byte>) {
+        for (i, nn) in file.iter().enumerate() {
+            self.ram[0x200 + i] = *nn;
+            self.pc = 0x200;
+        }
+        self.rom_read = true;
+    }
+
         self.ram = [0; 0xfff];
         self.init();
         self.display.clear();

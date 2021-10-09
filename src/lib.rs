@@ -18,13 +18,16 @@ mod tests {
     #[test]
     fn breakout() {
         let mut chip = Chip::new();
-        chip.read_rom(String::from("./assets/games/br8kout.ch8"))
+        chip.read_rom_path(String::from("./assets/games/br8kout.ch8"))
             .unwrap();
         loop {
             println!("{}", chip.tick());
         }
     }
 }
+
+pub(crate) type Byte = u8;
+
 #[wasm_bindgen]
 pub struct ChipController {
     chip: Chip,
@@ -48,6 +51,11 @@ impl ChipController {
     pub fn set_pressed_key(&mut self, key: Option<ChipKey>) {
         self.chip.set_key(key);
     }
+
+    pub fn set_rom(&mut self, file: Vec<Byte>) {
+        self.chip.read_rom_bytes(file);
+    }
+
     pub fn get_display(&self) -> Vec<u8>{
         self.chip.display.get_pixels()
     }

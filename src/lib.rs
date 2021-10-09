@@ -48,6 +48,10 @@ impl ChipController {
     pub fn set_pressed_key(&mut self, key: Option<ChipKey>) {
         self.chip.set_key(key);
     }
+    pub fn get_display(&self) -> Vec<u8>{
+        self.chip.display.get_pixels()
+    }
+
 }
 
 /*

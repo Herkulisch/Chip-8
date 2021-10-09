@@ -25,6 +25,10 @@ impl ChipDisplay {
         self.width
     }
 
+    pub(crate) fn get_pixels(&self) -> Vec<u8>{
+        self.pixels.to_vec()
+    }
+
     pub(super) fn pixel_mut(&mut self, x: u8, y: u8) -> &mut u8 {
         &mut self.pixels[y as usize * self.width as usize + x as usize]
     }

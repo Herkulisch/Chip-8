@@ -56,6 +56,10 @@ impl ChipController {
         self.chip.read_rom_bytes(file);
     }
 
+    pub fn reset(&mut self) {
+        self.chip.reset();
+    }
+
     pub fn get_display(&self) -> Vec<u8>{
         self.chip.display.get_pixels()
     }

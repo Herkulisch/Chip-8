@@ -77,8 +77,6 @@ impl Chip {
         }
     }
 
-    ///Removes the ROM from the RAM and makes the chip ready to read another ROM
-    pub(crate) fn remove_rom(&mut self) {
     ///Gets the ROM as a vector of bytes and stores it into the RAM starting from address `0x200`
     pub(crate) fn read_rom_bytes(&mut self, file: Vec<Byte>) {
         for (i, nn) in file.iter().enumerate() {
@@ -88,7 +86,17 @@ impl Chip {
         self.rom_read = true;
     }
 
+    ///Resets the chip and makes it ready to read another ROM
+    pub(crate) fn reset(&mut self) {
         self.ram = [0; 0xfff];
+        self.v = [0; 16];
+        self.dt = 0;
+        self.st = 0;
+        self.i = 0;
+        self.pc = 0;
+        self.stack = [0; 16];
+        self.sp = 0;
+        self.pressed_key = None;
         self.init();
         self.display.clear();
         self.rom_read = false;

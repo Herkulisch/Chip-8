@@ -1,25 +1,27 @@
-use std::fmt::{Debug, Display as StdDisplay, Formatter, Result as fmtResult};
+use std::fmt::{Debug, Display, Formatter, Result as fmtResult};
 
 #[derive(Debug)]
-pub struct Display {
+pub struct ChipDisplay {
     pixels: Vec<u8>,
     height: u8,
     width: u8,
 }
 
-impl Display {
-    pub(super) fn new(width: u8, height: u8) -> Display {
-        Display {
+impl ChipDisplay {
+    pub(super) fn new() -> ChipDisplay {
+        let height = 32;
+        let width = 64;
+        ChipDisplay {
             pixels: vec![0; height as usize * width as usize],
             height: height,
             width: width,
         }
     }
-    pub fn get_height(&self) -> u8 {
+    pub(crate) fn get_height(&self) -> u8 {
         self.height
     }
 
-    pub fn get_width(&self) -> u8 {
+    pub(crate) fn get_width(&self) -> u8 {
         self.width
     }
 
@@ -36,7 +38,7 @@ impl Display {
     }
 }
 
-impl StdDisplay for Display {
+impl Display for ChipDisplay {
     fn fmt(&self, f: &mut Formatter) -> fmtResult {
         let mut output_string = "".to_owned();
         for (i, value) in self.pixels.iter().enumerate() {

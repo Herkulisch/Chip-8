@@ -1,4 +1,4 @@
-use display::Display;
+use display::ChipDisplay;
 pub use input::ChipKey;
 pub use input::KeyCode;
 pub use instruction::Instruction;
@@ -27,7 +27,7 @@ pub struct Chip {
     pub(super) pc: u16,
     pub(super) stack: [u16; 16],
     pub(super) sp: u8,
-    pub(super) display: Display,
+    pub(super) display: ChipDisplay,
     pressed_key: Option<ChipKey>,
     rom_read: bool,
 }
@@ -36,7 +36,7 @@ impl Chip {
     pub(crate) fn new() -> Self {
         let mut chip = Chip {
             ram: [0; 0xfff],
-            display: Display::new(64, 32),
+            display: ChipDisplay::new(),
             v: [0; 16],
             dt: 0,
             st: 0,

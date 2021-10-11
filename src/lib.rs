@@ -3,27 +3,7 @@ use std::time::Duration;
 
 #[allow(dead_code)]
 mod chip;
-
-#[cfg(test)]
-mod tests {
-    use crate::chip::Chip;
-    /// This should just panic
-    #[test]
-    fn empty_rom() {
-        let mut chip = Chip::new();
-        chip.tick();
-    }
-    /// This should run infinetly
-    #[test]
-    fn breakout() {
-        let mut chip = Chip::new();
-        chip.read_rom(String::from("./assets/games/br8kout.ch8"))
-            .unwrap();
-        loop {
-            println!("{}", chip.tick());
-        }
-    }
-}
+mod tests;
 
 pub struct ChipController {
     chip: Chip,

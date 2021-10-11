@@ -1,5 +1,4 @@
 use chip::{Chip, ChipKey};
-use std::time::Duration;
 use std::panic;
 use wasm_bindgen::prelude::*;
 
@@ -21,13 +20,17 @@ impl ChipController {
         ChipController { chip: Chip::new() }
     }
 
-    /// Execute Instructions until the time given in ms is over
-    pub fn tick_for(&mut self, ms: usize) {
-        self.chip.tick_for(Duration::from_millis(ms as u64));
-    }
-
-    pub fn tick(&mut self) {
-        self.chip.tick();
+    pub fn tick(&mut self, instructions: Option<usize>) {
+        match instructions {
+            Some(is) => {
+                for _ in 0..is {
+                    self.chip.tick();
+                }
+            }
+            None => {
+                self.chip.tick();
+            }
+        }
     }
 
     pub fn set_pressed_key(&mut self, key: Option<ChipKey>) {

@@ -1,5 +1,6 @@
 use chip::{Chip, ChipKey};
 use std::time::Duration;
+use std::panic;
 use wasm_bindgen::prelude::*;
 
 #[allow(dead_code)]
@@ -36,6 +37,7 @@ pub struct ChipController {
 #[wasm_bindgen]
 impl ChipController {
     pub fn new() -> Self {
+        panic::set_hook(Box::new(console_error_panic_hook::hook));
         ChipController { chip: Chip::new() }
     }
 

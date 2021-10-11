@@ -52,14 +52,14 @@ impl Chip {
         chip
     }
 
-    ///Loads the Spritebytes into the RAM
+    /// Loads the Spritebytes into the RAM
     fn init(&mut self) {
         for (i, sprite) in SPRITES.iter().enumerate() {
             self.ram[i] = *sprite;
         }
     }
 
-    ///Reads the ROM from a file and stores it into the RAM starting from address `0x200`
+    /// Reads the ROM from a file and stores it into the RAM starting from address `0x200`
     pub(crate) fn read_rom_path(&mut self, path: String) -> Result<(), &str> {
         if !self.rom_read {
             match fs::read(path) {
@@ -78,7 +78,7 @@ impl Chip {
         }
     }
 
-    ///Gets the ROM as a vector of bytes and stores it into the RAM starting from address `0x200`
+    /// Gets the ROM as a vector of bytes and stores it into the RAM starting from address `0x200`
     pub(crate) fn read_rom_bytes(&mut self, file: Vec<Byte>) {
         for (i, nn) in file.iter().enumerate() {
             self.ram[0x200 + i] = *nn;
@@ -87,7 +87,7 @@ impl Chip {
         self.rom_read = true;
     }
 
-    ///Resets the chip and makes it ready to read another ROM
+    /// Resets the chip and makes it ready to read another ROM
     pub(crate) fn reset(&mut self) {
         self.ram = [0; 0xfff];
         self.v = [0; 16];
@@ -103,12 +103,15 @@ impl Chip {
         self.rom_read = false;
     }
 
-    ///Sets the key thats currently pressed
+    /// Sets the key thats currently pressed
     pub(crate) fn set_key(&mut self, key: Option<ChipKey>) {
         self.pressed_key = key;
     }
 
-    ///Is like tick but keeps executing instructions for the given duration
+    /// Is like tick but keeps executing instructions for the given duration
+    ///     
+    /// **NOTE:** WASM is currently not able to use anything that uses feature `std::
+    /// time::Instant` so it just panics in WASM and stops at the Uncreachable Instruction
     pub(crate) fn tick_for(&mut self, duration: Duration) -> Vec<Instruction> {
         let mut instructions = Vec::new();
         let start = Instant::now();
@@ -122,8 +125,8 @@ impl Chip {
         instructions
     }
 
-    ///Executes the Instruction that its currently stored at position pc and pc+1
-    ///and returns it
+    /// Executes the Instruction that its currently stored at position pc and pc+1
+    /// and returns it
     pub(crate) fn tick(&mut self) -> Instruction {
         let l_byte = self.ram[self.pc as usize];
         let r_byte = self.ram[self.pc as usize + 1];
@@ -132,12 +135,12 @@ impl Chip {
         instruction
     }
 
-    ///Goes to the next Instruction by adding 2 to the Program Counter
+    /// Goes to the next Instruction by adding 2 to the Program Counter
     pub(super) fn next(&mut self) {
         self.pc += 1 * 2;
     }
 
-    ///Skips the next Instruction by adding 4 to the Program Counter
+    /// Skips the next Instruction by adding 4 to the Program Counter
     pub(super) fn skip(&mut self) {
         self.pc += 2 * 2;
     }

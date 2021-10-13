@@ -144,7 +144,7 @@ impl Instruction {
                 }
             }
             Instruction::SKP(key) => {
-                let key = ChipKey::from(*key as usize);
+                let key = ChipKey::from(chip.v[*key as usize]);
                 match chip.pressed_key {
                     Some(k) => {
                         let key_pressed = k == key;
@@ -158,7 +158,7 @@ impl Instruction {
                 }
             }
             Instruction::SKNP(key) => {
-                let key = ChipKey::from(*key as usize);
+                let key = ChipKey::from(chip.v[*key as usize]);
                 match chip.pressed_key {
                     Some(k) => {
                         let key_pressed = k == key;

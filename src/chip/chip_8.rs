@@ -73,12 +73,13 @@ impl Chip8 {
                 if self.dt > 0 || self.st > 0 {
                     if self.dt > 0 {
                         self.dt -= 1;
+                        thread::sleep(millis);
+                        self.pressed_key = ui::pressed_key(Duration::from_millis(1));
                     }
                     if self.st > 0 {
                         self.st -= 1
                         // Because i wanted this to work as a TUI Application, it currently does not support sound
                     }
-                    thread::sleep(millis);
                 } else {
                     let l_byte = self.ram[self.pc as usize];
                     let r_byte = self.ram[self.pc as usize + 1];

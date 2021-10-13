@@ -146,7 +146,7 @@ impl Instruction {
                 }
             }
             Instruction::SKP(key) => {
-                let key_pressed = chip.pressed_key == Some(ui::nibble_2_key(*key));
+                let key_pressed = chip.pressed_key == Some(ui::nibble_2_key(chip.v[*key as usize]));
                 if key_pressed {
                     chip.skip();
                 } else {
@@ -154,7 +154,7 @@ impl Instruction {
                 }
             }
             Instruction::SKNP(key) => {
-                let key_pressed = chip.pressed_key == Some(ui::nibble_2_key(*key));
+                let key_pressed = chip.pressed_key == Some(ui::nibble_2_key(chip.v[*key as usize]));
                 if !key_pressed {
                     chip.skip();
                 } else {

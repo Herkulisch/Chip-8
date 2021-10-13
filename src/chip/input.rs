@@ -66,10 +66,36 @@ pub enum ChipKey {
     F = 0xF,
 }
 
-/// Tranlates any unsigned number into a Chip8 Key if the numer is greater than 4 bit it will
+/// Tranlates any unsigned number into a Chip8 Key if the number is greater than 4 bit it will
 /// be mapped to the ChipKey F
 impl From<usize> for ChipKey {
     fn from(nibble: usize) -> Self {
+        match nibble {
+            0x0 => ChipKey::Zero,
+            0x1 => ChipKey::One,
+            0x2 => ChipKey::Two,
+            0x3 => ChipKey::Three,
+            0x4 => ChipKey::Four,
+            0x5 => ChipKey::Five,
+            0x6 => ChipKey::Six,
+            0x7 => ChipKey::Seven,
+            0x8 => ChipKey::Eight,
+            0x9 => ChipKey::Nine,
+            0xA => ChipKey::A,
+            0xB => ChipKey::B,
+            0xC => ChipKey::C,
+            0xD => ChipKey::D,
+            0xE => ChipKey::E,
+            0xF => ChipKey::F,
+            _ => ChipKey::F, // This should never happen
+        }
+    }
+}
+
+/// Tranlates any unsigned number into a Chip8 Key if the number is greater than 4 bit it will
+/// be mapped to the ChipKey F
+impl From<u8> for ChipKey {
+    fn from(nibble: u8) -> Self {
         match nibble {
             0x0 => ChipKey::Zero,
             0x1 => ChipKey::One,

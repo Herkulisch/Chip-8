@@ -2,6 +2,13 @@
 I used this [Documentation](http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#2.5) to help me understand the architecture of the chip.
 
 ---
+
+***This version is kinda deprecated right now, I will refactor most of it to make it similar to the lib and wasm version. And I will probably rename this into Terminal-Version or something like that.***
+
+
+
+
+
 After just 2 days I had a ~~working~~ emulator, I just had some minor bugs in it.
 My goals were to write it in Rust 🦀 and let it run as a terminal user interface application.
 I found a test rom, which showed me which instructions were still flawed, so I could fix them more precisely. I used a enum to seperate all Instructions and also implemented the From trait for the enum, so that 16bit value could easily be parsed into a chip8 instruction.

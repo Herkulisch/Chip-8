@@ -1,7 +1,8 @@
 #[allow(dead_code)]
 mod chip;
-use chip::{Chip, ChipKey};
 use super::Byte;
+use chip::Chip;
+pub use chip::ChipKey;
 
 pub struct ChipController {
     chip: Chip,

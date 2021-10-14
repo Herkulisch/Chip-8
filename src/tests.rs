@@ -1,5 +1,5 @@
 #[cfg(test)]
-use crate::ChipController;
+use crate::chip_controller::ChipController;
 
 /// This should run infinetly
 #[test]

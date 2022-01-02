@@ -108,11 +108,11 @@ impl Chip {
         self.pressed_key = key;
     }
 
-    /// Is like tick but keeps executing instructions for the given duration
+    /// Is like cycle but keeps executing instructions for the given duration
     ///     
     /// **NOTE:** WASM is currently not able to use anything that uses feature `std::
     /// time::Instant` so it just panics in WASM and stops at the Uncreachable Instruction
-    pub(crate) fn tick_for(&mut self, duration: Duration) -> Vec<Instruction> {
+    pub(crate) fn cycles(&mut self, duration: Duration) -> Vec<Instruction> {
         let mut instructions = Vec::new();
         let start = Instant::now();
         while Instant::now() - start < duration {
@@ -127,7 +127,7 @@ impl Chip {
 
     /// Executes the Instruction that its currently stored at position pc and pc+1
     /// and returns it
-    pub(crate) fn tick(&mut self) -> Instruction {
+    pub(crate) fn cycle(&mut self) -> Instruction {
         let l_byte = self.ram[self.pc as usize];
         let r_byte = self.ram[self.pc as usize + 1];
         let instruction = Instruction::from([l_byte, r_byte]);

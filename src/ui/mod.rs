@@ -60,7 +60,7 @@ impl UI {
                     break;
                 }
                 self.chip.set_pressed_key(chip_key);
-                self.chip.tick(None);
+                self.chip.cycle(None);
                 self.chip.get_sound_timer();
                 self.update();
             }

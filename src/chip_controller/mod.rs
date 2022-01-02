@@ -16,11 +16,11 @@ impl ChipController {
         match instructions {
             Some(is) => {
                 for _ in 0..is {
-                    self.chip.tick();
+                    self.chip.cycle();
                 }
             }
             None => {
-                self.chip.tick();
+                self.chip.cycle();
             }
         }
     }

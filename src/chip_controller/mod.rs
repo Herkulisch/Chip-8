@@ -2,17 +2,20 @@
 mod chip;
 use chip::{Chip, ChipKey};
 use super::Byte;
+use wasm_bindgen::prelude::*;
 
+#[wasm_bindgen]
 pub struct ChipController {
     chip: Chip,
 }
 
+#[wasm_bindgen]
 impl ChipController {
     pub fn new() -> Self {
         ChipController { chip: Chip::new() }
     }
 
-    pub fn tick(&mut self, instructions: Option<usize>) {
+    pub fn cycle(&mut self, instructions: Option<usize>) {
         match instructions {
             Some(is) => {
                 for _ in 0..is {

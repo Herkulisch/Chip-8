@@ -20,15 +20,15 @@ impl ChipController {
         ChipController { chip: Chip::new() }
     }
 
-    pub fn tick(&mut self, instructions: Option<usize>) {
+    pub fn cycle(&mut self, instructions: Option<usize>) {
         match instructions {
             Some(is) => {
                 for _ in 0..is {
-                    self.chip.tick();
+                    self.chip.cycle();
                 }
             }
             None => {
-                self.chip.tick();
+                self.chip.cycle();
             }
         }
     }

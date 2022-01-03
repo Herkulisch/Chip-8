@@ -64,6 +64,7 @@ impl UI {
                 self.chip.get_sound_timer();
                 self.update();
             }
+            self.chip.tick(None);
         }
     }
 

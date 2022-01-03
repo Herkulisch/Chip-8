@@ -13,12 +13,13 @@ use crossterm::{
 use std::{
     io::{stdout, Stdout, Write},
     thread as Thread,
-    time::Duration,
+    time::{Duration, Instant},
 };
 
 pub struct UI {
     output: Stdout,
     chip: ChipController,
+    freq: usize,
     dimension: (u8, u8),
     alt_screen_active: bool,
 }
@@ -28,6 +29,7 @@ impl UI {
         Self {
             output: stdout(),
             chip: ChipController::new(),
+            freq: 1000,
             dimension: (64, 32),
             alt_screen_active: false,
         }
@@ -46,25 +48,38 @@ impl UI {
         }
         let mut key: KeyCode;
         let mut chip_key: Option<ChipKey>;
+        let millis = Duration::from_secs_f64(1f64 / self.freq as f64);
+        let mut now = Instant::now();
+        let mut last_delay_dec: Instant = now;
+        let mut last_sound_dec: Instant = now;
+        const SIXTEEN_MS: Duration = Duration::from_millis(16);
         loop {
-            if self.chip.get_delay_timer() > 0 {
-                Thread::sleep(Duration::from_millis((1f64 / 60f64) as u64));
-            } else {
-                key = self.read_key();
-                chip_key = match Self::into_chip_key(&key) {
-                    Ok(e) => Some(e),
-                    Err(_) => None,
-                };
-                if key == KeyCode::Char('q') {
-                    self.deactivate_display().unwrap();
-                    break;
+            now = Instant::now();
+            if self.chip.delay_timer() > 0 {
+                if now.duration_since(last_delay_dec) >= SIXTEEN_MS {
+                    self.chip.dec_delay_timer();
+                    last_delay_dec = now;
                 }
-                self.chip.set_pressed_key(chip_key);
-                self.chip.cycle(None);
-                self.chip.get_sound_timer();
-                self.update();
             }
+            if self.chip.sound_timer() > 0 {
+                if now.duration_since(last_sound_dec) >= SIXTEEN_MS {
+                    self.chip.dec_sound_timer();
+                    last_sound_dec = now;
+                }
+            }
+            key = self.read_key();
+            chip_key = match Self::into_chip_key(&key) {
+                Ok(e) => Some(e),
+                Err(_) => None,
+            };
+            if key == KeyCode::Char('q') {
+                self.deactivate_display().unwrap();
+                break;
+            }
+            self.chip.set_pressed_key(chip_key);
             self.chip.tick(None);
+            Thread::sleep(millis);
+            self.update();
         }
     }
 
@@ -88,7 +103,7 @@ impl UI {
     }
 
     fn read_key(&self) -> KeyCode {
-        let key = match poll(Duration::from_millis(1)).unwrap() {
+        let key = match poll(Duration::from_nanos(1)).unwrap() {
             true => match read().unwrap() {
                 Event::Key(x) => x.code,
                 _ => KeyCode::Null,

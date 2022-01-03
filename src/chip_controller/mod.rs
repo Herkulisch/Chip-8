@@ -34,20 +34,24 @@ impl ChipController {
         self.chip.read_rom_bytes(file);
     }
 
-    pub fn get_delay_timer(&mut self) -> u8 {
-        let dt = self.chip.dt;
-        if dt > 0 {
-            self.chip.dt -= 1;
-        }
-        dt
+    pub fn delay_timer(&mut self) -> u8 {
+        self.chip.dt
     }
 
-    pub fn get_sound_timer(&mut self) -> u8 {
-        let st = self.chip.st;
-        if st > 0 {
+    pub fn sound_timer(&mut self) -> u8 {
+        self.chip.st
+    }
+
+    pub fn dec_delay_timer(&mut self) {
+        if self.chip.dt > 0 {
+            self.chip.dt -= 1;
+        }
+    }
+
+    pub fn dec_sound_timer(&mut self) {
+        if self.chip.st > 0 {
             self.chip.st -= 1;
         }
-        st
     }
 
     pub fn reset(&mut self) {

@@ -41,18 +41,25 @@ impl UI {
 
     pub fn run(&mut self) {
         self.activate_display().unwrap();
+
+        // Read ROM path from args
         for (i, arg) in std::env::args().enumerate() {
             if i == 1 {
                 self.chip.set_rom(std::fs::read(arg).unwrap());
             }
         }
+
         let mut key: KeyCode;
         let mut chip_key: Option<ChipKey>;
         let millis = Duration::from_secs_f64(1f64 / self.freq as f64);
+
         let mut now = Instant::now();
         let mut last_delay_dec: Instant = now;
         let mut last_sound_dec: Instant = now;
+
         const SIXTEEN_MS: Duration = Duration::from_millis(16);
+
+        // Emulator cycle
         loop {
             now = Instant::now();
             if self.chip.delay_timer() > 0 {

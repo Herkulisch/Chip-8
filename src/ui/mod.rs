@@ -44,9 +44,22 @@ impl UI {
 
         // Read ROM path from args
         for (i, arg) in std::env::args().enumerate() {
-            if i == 1 {
-                self.chip.set_rom(std::fs::read(arg).unwrap());
-            }
+            match i {
+                1 => {
+                    let rom = match std::fs::read(arg) {
+                        Ok(vec) => vec,
+                        Err(e) => panic!("Please provide an existing path!"),
+                    };
+                    self.chip.set_rom(rom);
+                }
+                2 => {
+                    self.freq = match arg.parse() {
+                        Ok(i) => i,
+                        Err(_) => self.freq,
+                    }
+                }
+                _ => (),
+            };
         }
 
         let mut key: KeyCode;

@@ -12,7 +12,7 @@ use crossterm::{
 };
 use std::{
     io::{stdout, Stdout, Write},
-    thread as Thread,
+    thread,
     time::{Duration, Instant},
 };
 
@@ -85,7 +85,7 @@ impl UI {
             }
             self.chip.set_pressed_key(chip_key);
             self.chip.tick(None);
-            Thread::sleep(millis);
+            thread::sleep(millis);
             self.update();
         }
     }
